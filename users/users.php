@@ -23,13 +23,11 @@ class User{
       if (!filter_var($this->umail, FILTER_VALIDATE_EMAIL)){
         $err[] = 'There is something wrong with the provided email.';
       }
-      if(
       if (empty($err)){
         $pwd = password_hash($_POST['pwd'], PASSWORD_DEFAULT);
         $this->secret = hash('sha-256', $_POST['pwd']);
         $iv = random_bytes(16);
         $this->create_key_pair();
-
       }
     }
   }
