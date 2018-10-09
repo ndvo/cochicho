@@ -1,0 +1,16 @@
+nav {
+  box-shadow: 5px 5px 5px 1px silver;
+  padding: 5px 10px;
+}
+ul{
+  padding: 0;
+  margin: 0:
+}
+nav li{
+  display: inline;
+ padding: 5px 10px;
+}
+
+nav li:hover{
+ background: #fafafa;
+}

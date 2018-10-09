@@ -1,0 +1,42 @@
+digraph G{
+
+  
+  subgraph cluster_registration{
+    label="Registration";
+    Register
+    Password[shape="box"];
+    HashedPassword[shape="box"];
+    Secret[shape="box"];
+    PubKey[shape="box"];
+    PrivKey[shape="box"];
+    HashLogin
+    HashSecret
+    CreateKeyPairs
+  }
+  Register->Password->{HashLogin, HashSecret}
+  HashLogin->HashedPassword;
+  HashSecret->Secret
+  HashSecret->CreateKeyPairs->{
+        PubKey;
+        PrivKey;
+  }
+  PubKey->Persist
+  PrivKey->Encrypt->Persist
+  Secret->Encrypt
+
+  subgraph cluster_persist{
+    Persist->{
+    StoredHashedPassword[shape="box"];
+    StoredPubKey[shape="box"];
+    StoreEncryptedPrivKey[shape="box"];
+    }
+  } 
+
+  subgraph cluster_login{
+    label="Login"  ;
+    LoginPassword[shape="box"];
+    LoginSecret[shape="box"]
+    User->Login->LoginPassword->CheckPassword->GenerateSecret->LoginSecret
+  }
+  StoredHashedPassword->CheckPassword;
+}
