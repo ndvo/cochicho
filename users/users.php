@@ -1,5 +1,7 @@
 <?php
+
 namespace User;
+require_once( 'config/db.php');
 
 
 class User{
@@ -8,6 +10,7 @@ class User{
   private $authenticated;
   private $iv;
   private $method = "AES-256-CBC";
+  private $private_key;
 
   public function register(){
     if (isset($_POST['submit'])){
@@ -20,11 +23,12 @@ class User{
       if (!filter_var($this->umail, FILTER_VALIDATE_EMAIL)){
         $err[] = 'There is something wrong with the provided email.';
       }
+      if(
       if (empty($err)){
         $pwd = password_hash($_POST['pwd'], PASSWORD_DEFAULT);
         $this->secret = hash('sha-256', $_POST['pwd']);
         $iv = random_bytes(16);
-        create_key_pair($_POST['pwd']);
+        $this->create_key_pair();
 
       }
     }
@@ -60,7 +64,6 @@ class User{
 
   private function reveal_message($message, $envelope){
     $key = decrypt_priv_key();
-    if ()
   }
 
   public function authenticate(){
@@ -69,12 +72,16 @@ class User{
     }
   }
 
-  private function create_key_pair{
+  private function create_key_pair(){
     $res =  openssl_pkey_new([
       'private_key_bits' => 2048,
       'private_key_type' => OPENSSL_KEYTYPE_RSA,
     ]);
-    #TODO: complete function
+    if (openssl_pkey_export ($res, $privkey)){
+      $this->private_key = $privkey;
+      $pub = openssl_pkey_get_details($res);
+      $this->public_key = $pub["key"];
+    }
   }
 
   private function encrypt_priv_key(){

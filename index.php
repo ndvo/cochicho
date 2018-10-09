@@ -4,9 +4,9 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-require 'config/db.php';
-require 'users/users.php';
-require 'page.php';
+require_once('config/db.php');
+require_once('users/users.php');
+require_once('page.php');
 
 use \DB\Conn as D;
 
