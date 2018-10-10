@@ -29,15 +29,19 @@
     <p>Three passwords?!? Yup. Much easier than special chars. Choose three
     passwords that will keep your secret messages secret.</p>
     <label for="pwd-square">■ Password:
-      <input type="password" name="pwd-square" required >
+      <input onchange="setPassStrengthMeter()" type="password" name="pwd-square" required >
     </label>
 
     <label for="pwd-triangle">▲ Password:
-      <input type="password" name="pwd-triangle" required>
+      <input onchange="setPassStrengthMeter()" type="password" name="pwd-triangle" required>
     </label>
 
     <label for="pwd-circle">● Password:
-      <input type="password" name="pwd-circle" required>
+      <input onchange="setPassStrengthMeter()" type="password" name="pwd-circle" required>
+    </label>
+    <label >Password Strength:
+      <meter min="0" max="300" value="0"></meter>
+      <output></output>
     </label>
     </fieldset>
     

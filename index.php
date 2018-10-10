@@ -30,6 +30,7 @@ $F_front_page = function($params, &$data, &$template){
 };
 
 $F_install = function($params, &$data, &$template){
+  echo "Vamos instalar";
   global $db;
   $db->install();
 };
@@ -49,20 +50,25 @@ $F_register = function($params, &$data, &$template){
   if (empty($_POST)){
     $template->content = 'templates/register.php';
     $data->title = 'Registration';
+    $data->user = True;
   }else{
     $u = new User();
     $u->register();
-
     $data->title = 'Tentativa de criar usuário';
     $template->content = 'templates/welcome.php';
     $data->content = "$u->name ";
   }
 };
 
+$F_dbdump = function($params, &$data, &$template){
+  $template->content = 'templates/dbdump.php';
+};
+
 if (!$error){
   $params = [];
   $routes = [
-    '/^admin\/install\/?$/'=> $F_install,
+    '/^\/dbdump\/?$/'=> $F_dbdump,
+    '/^\/admin\/install\/?$/'=> $F_install,
     '/^\/login\/?$/'=> $F_login,
     '/^\/register\/?$/'=> $F_register,
     '/^\/?$/'=> $F_front_page,
@@ -99,5 +105,7 @@ if (!$error){
   <footer>
     <?php echo \Page\template_render($template->footer, $data); ?>
   </footer>
+<script src="js/main.js">
+</script>
 </body>
 </html>

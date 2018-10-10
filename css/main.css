@@ -1,8 +1,10 @@
 :root{
 --m-width: 95ch;
+--width: 90vw;
 }
 body{
   max-width: 105ch;
+  width: var(--width);
   margin: 1em auto;
   box-shadow: 0px 0px 5px 1px #fafafa;
   font-family: sans-serif;
@@ -43,7 +45,6 @@ nav li:hover{
 fieldset{
   margin: 1em 0;
 }
-
 footer{
   border-top: solid thin silver;
   max-width: var(--m-width);
@@ -52,4 +53,13 @@ footer{
   flex-direction: row;
   justify-content: space-between;
   padding: 1em 1em 2em 1em;
+}
+fieldset#password{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+}
+label{
+  margin: 5px;
 }

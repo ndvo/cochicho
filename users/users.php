@@ -19,7 +19,6 @@ class User{
 
   public function register(){
     $err = [];
-    print_r($_POST);
     if (!empty($_POST)){
       $this->name = $_POST['username'];
       $this->mail = $_POST['mail'];
@@ -37,12 +36,10 @@ class User{
       if (empty($_POST['terms'])){
         $err[] = 'The use of this service is conditioned to the acceptance of the Terms of Use.';
       }
-      print_r($err);
       if (empty($err)){
         $this->secret = hash('sha256', $pwd);
         $iv = random_bytes(16);
         $ok = $this->create_key_pair();
-        print($ok);
         if ($ok){
           $db = D::get();
           $db->insert_user($this->mail, $this->name, $pwd, $this->public_key, 1);
