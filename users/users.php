@@ -3,33 +3,53 @@
 namespace User;
 require_once( 'config/db.php');
 
+require_once('config/db.php');
+
+use \DB\Conn as D;
 
 class User{
   public $name;
+  public $mail;
   public $public_key;
   private $authenticated;
   private $iv;
   private $method = "AES-256-CBC";
   private $private_key;
+  public $err;
 
   public function register(){
-    if (isset($_POST['submit'])){
-      $this->uname = $_POST['uname'];
-      $this->umail = $_POST['umail'];
-      $umailconfirm = $_POST['umailconfirm'];
-      if ($this->umail != $umailconfirm){
+    $err = [];
+    print_r($_POST);
+    if (!empty($_POST)){
+      $this->name = $_POST['username'];
+      $this->mail = $_POST['mail'];
+      $umailconfirm = $_POST['mail2'];
+      if (empty($_POST['pwd-square']) ||  empty($_POST['pwd-circle']) || empty($_POST['pwd-triangle'])){
+        $err[] = 'Please, provide the 3 passwords';
+      }
+      $pwd = password_hash($_POST['pwd-square'].$_POST['pwd-circle'].$_POST['pwd-triangle'], PASSWORD_DEFAULT);
+      if ($this->mail != $umailconfirm){
         $err[] = 'Please, be sure to input the same address in both email and confirm email fields.';
       }
-      if (!filter_var($this->umail, FILTER_VALIDATE_EMAIL)){
+      if (!filter_var($this->mail, FILTER_VALIDATE_EMAIL)){
         $err[] = 'There is something wrong with the provided email.';
       }
+      if (empty($_POST['terms'])){
+        $err[] = 'The use of this service is conditioned to the acceptance of the Terms of Use.';
+      }
+      print_r($err);
       if (empty($err)){
-        $pwd = password_hash($_POST['pwd'], PASSWORD_DEFAULT);
-        $this->secret = hash('sha-256', $_POST['pwd']);
+        $this->secret = hash('sha256', $pwd);
         $iv = random_bytes(16);
-        $this->create_key_pair();
+        $ok = $this->create_key_pair();
+        print($ok);
+        if ($ok){
+          $db = D::get();
+          $db->insert_user($this->mail, $this->name, $pwd, $this->public_key, 1);
+        }
       }
     }
+    $this->err = $err;
   }
 
   public function save(){
@@ -79,6 +99,7 @@ class User{
       $this->private_key = $privkey;
       $pub = openssl_pkey_get_details($res);
       $this->public_key = $pub["key"];
+      return true;
     }
   }
 
@@ -91,6 +112,5 @@ class User{
   private function decrypt_priv_key(){
     return openssl_decrypt(base64_decode($this->encrypted_key), $this->method, $this->secret, 0, $this->iv);
   }
-
 
 }

@@ -1,4 +1,4 @@
   <header>
-    <h1><?php echo $data->title ?></h1>
+    <a href="/" title="Home"><span id="logo"> ⚿</span> messaging privately</a>
   </header>
 

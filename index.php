@@ -9,6 +9,7 @@ require_once('users/users.php');
 require_once('page.php');
 
 use \DB\Conn as D;
+use \User\User as User;
 
 $db = D::get();
 $data = new stdClass();
@@ -19,36 +20,53 @@ if ( $db == null){
   $error = 'It was not possible to connect to the database';
 }
 
-$front_page = function($params, &$data, &$template){
+$F_front_page = function($params, &$data, &$template){
   global $user;
   $data->title = 'Welcome';
+  $template->content = 'templates/front.php';
   if (empty($user)){
     $data->content = 'Please, log in to the system';
   }
 };
 
-$install = function($params, &$data, &$template){
+$F_install = function($params, &$data, &$template){
+  global $db;
   $db->install();
 };
 
-$not_found = function($params, &$data, &$template){
+$F_not_found = function($params, &$data, &$template){
   $template->content = 'templates/content.php';
   $data->title = 'Title not set';
   $data->content = 'nothing to see here!';
 };
 
-$login = function($params, &$data, &$template){
+$F_login = function($params, &$data, &$template){
   $template->content = 'templates/login.php';
   $data->title = 'Please, provide your credentials!';
+};
+
+$F_register = function($params, &$data, &$template){
+  if (empty($_POST)){
+    $template->content = 'templates/register.php';
+    $data->title = 'Registration';
+  }else{
+    $u = new User();
+    $u->register();
+
+    $data->title = 'Tentativa de criar usuário';
+    $template->content = 'templates/welcome.php';
+    $data->content = "$u->name ";
+  }
 };
 
 if (!$error){
   $params = [];
   $routes = [
-    '/^admin\/install\/?$/'=> $install,
-    '/^\/login\/?$/'=> $login,
-    '/^\/?$/'=> $front_page,
-    '/.*/' => $not_found,
+    '/^admin\/install\/?$/'=> $F_install,
+    '/^\/login\/?$/'=> $F_login,
+    '/^\/register\/?$/'=> $F_register,
+    '/^\/?$/'=> $F_front_page,
+    '/.*/' => $F_not_found,
   ];
 
   foreach ($routes as $pattern => $function){
@@ -69,12 +87,12 @@ if (!$error){
    <link rel="stylesheet" type="text/css" href="/css/main.css">
 </head>
 <body>
-  <nav>
-    <?php echo \Page\template_render($template->navigation, $data); ?>
-  </nav>
   <header>
     <?php echo \Page\template_render($template->header, $data); ?>
   </header>
+  <nav>
+    <?php echo \Page\template_render($template->navigation, $data); ?>
+  </nav>
   <main>
     <?php echo \Page\template_render($template->content, $data); ?>
   </main>

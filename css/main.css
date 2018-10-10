@@ -1,16 +1,55 @@
+:root{
+--m-width: 95ch;
+}
+body{
+  max-width: 105ch;
+  margin: 1em auto;
+  box-shadow: 0px 0px 5px 1px #fafafa;
+  font-family: sans-serif;
+}
+#logo{
+  font-size: 40px;
+}
+header{
+  max-width: var(--m-width);
+  margin: 0 auto;
+  padding: 1em;
+}
+
+
+main{
+  max-width: var(--m-width);
+  margin: 0 auto;
+  padding: 1em;
+}
+
 nav {
-  box-shadow: 5px 5px 5px 1px silver;
+  max-width: var(--m-width);
+  margin: 0 auto;
   padding: 5px 10px;
+  border-bottom: solid thin silver;
 }
-ul{
-  padding: 0;
-  margin: 0:
-}
+
+
 nav li{
   display: inline;
- padding: 5px 10px;
+  padding: 5px 10px;
 }
 
 nav li:hover{
- background: #fafafa;
+  background: #fafafa;
+}
+
+fieldset{
+  margin: 1em 0;
+}
+
+footer{
+  border-top: solid thin silver;
+  max-width: var(--m-width);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 1em 1em 2em 1em;
 }

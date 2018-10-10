@@ -39,7 +39,6 @@ class Conn{
       $err = $this->pdo->errorInfo();
       print_r( $err);
     }
-    echo "done";
   }
 
 
@@ -54,12 +53,11 @@ class Conn{
   public function insert_user($mail, $name, $password, $pubkey, $terms){
     $query = file_get_contents('db/create_user.sql');
     $query = $this->pdo->prepare($query);
-    $query->bindParam(':mail', $name);
+    $query->bindParam(':mail', $mail);
     $query->bindParam(':name', $name);
-    $query->bindParam(':password', $name);
-    $query->bindParam(':pubkey', $name);
-    $query->bindParam(':privkey', $name);
-    $query->bindParam(':terms', $name);
-
+    $query->bindParam(':password', $password);
+    $query->bindParam(':pubkey', $pubkey);
+    $query->bindParam(':terms', $terms);
+    $query->execute();
   }
 }
