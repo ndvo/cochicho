@@ -8,6 +8,15 @@ require_once('config/db.php');
 require_once('users/users.php');
 require_once('page.php');
 
+
+session_start(
+  [
+    'cookie_httponly'=>true,
+    'cookie_domain'=>'security',
+  ]
+);
+        
+
 use \DB\Conn as D;
 use \User\User as User;
 
@@ -19,20 +28,26 @@ if ( $db == null){
   $data->title = 'Oooops! Something went wrong';
   $error = 'It was not possible to connect to the database';
 }
+if ($_SERVER['REQUEST_URI'] != '/admin/install'){
+  $user = new User();
+}
 
 $F_front_page = function($params, &$data, &$template){
   global $user;
   $data->title = 'Welcome';
   $template->content = 'templates/front.php';
-  if (empty($user)){
+  if (empty($user->id)){
     $data->content = 'Please, log in to the system';
   }
 };
 
 $F_install = function($params, &$data, &$template){
-  echo "Vamos instalar";
   global $db;
+  $data->title = "Instalation and upgrade";
+  $data->content = "Installing a new system's version";
+  $template->content = 'templates/install.php';
   $db->install();
+
 };
 
 $F_not_found = function($params, &$data, &$template){
@@ -42,8 +57,26 @@ $F_not_found = function($params, &$data, &$template){
 };
 
 $F_login = function($params, &$data, &$template){
-  $template->content = 'templates/login.php';
-  $data->title = 'Please, provide your credentials!';
+  if (empty($_POST)){
+    $template->content = 'templates/login.php';
+    $data->title = 'Please, provide your credentials!';
+  }else{
+    global $user;
+    $ok = $user->authenticate();
+    if (!$ok){
+      $err = "<ul>\n";
+      foreach ($user->err as $e){
+        $err.= "<li>$e</li>";
+      }
+      $err.= "</ul>";
+      $data->warning = $err;
+      $data->title = "";
+      $template->content = 'templates/login.php';
+      $data->title = 'Something went wrong. Please, review your credentials!';
+    }else{
+      $data->warning = "Welcome $user->name";
+    }
+  }
 };
 
 $F_register = function($params, &$data, &$template){
@@ -52,17 +85,26 @@ $F_register = function($params, &$data, &$template){
     $data->title = 'Registration';
     $data->user = True;
   }else{
-    $u = new User();
-    $u->register();
-    $data->title = 'Tentativa de criar usuário';
-    $template->content = 'templates/welcome.php';
-    $data->content = "$u->name ";
+    global $user;
+    $ok = $user->register();
+    if ($ok){
+      $data->title = "Thank you for registering, $user->name";
+      $template->content = 'templates/welcome.php';
+    }else{
+      $err = "<ul>\n";
+      foreach ($user->err as $e){
+        $err.= "<li>$e</li>";
+      }
+      $err.= "</ul>";
+      $data->warning = $err;
+    }
   }
 };
 
 $F_dbdump = function($params, &$data, &$template){
   $template->content = 'templates/dbdump.php';
 };
+
 
 if (!$error){
   $params = [];
@@ -86,6 +128,7 @@ if (!$error){
     $not_found([], $data, $template);
   }
 }
+
 ?>
 
 <html>
@@ -93,12 +136,21 @@ if (!$error){
    <link rel="stylesheet" type="text/css" href="/css/main.css">
 </head>
 <body>
+  <?php echo empty($warning)? '': $warning; ?>
   <header>
     <?php echo \Page\template_render($template->header, $data); ?>
   </header>
   <nav>
     <?php echo \Page\template_render($template->navigation, $data); ?>
   </nav>
+  <?php if (!empty($data->warning)): ?>
+  <dialog open >
+    <?php echo  $data->warning ; ?>
+      <span class="close-button" onclick="this.parentNode.removeAttribute('open');this.parentNode.addAttribute('close');">
+        &times;
+      </span>
+  </dialog>
+  <?php endif; ?>
   <main>
     <?php echo \Page\template_render($template->content, $data); ?>
   </main>

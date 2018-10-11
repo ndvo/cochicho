@@ -22,7 +22,7 @@ class Conn{
   private function connect(){
     if ($this->pdo == null){
       try{
-        $this->pdo = new \PDO("sqlite:db/scratch.db");
+        $this->pdo = new \PDO("sqlite:content/content.db");
         $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
       }catch (Exception $e){
         echo "Error";
@@ -59,5 +59,43 @@ class Conn{
     $query->bindParam(':pubkey', $pubkey);
     $query->bindParam(':terms', $terms);
     $query->execute();
+    $query->closeCursor();
+  }
+
+  public function basic_user_by_id($id){
+    $query = file_get_contents('db/user/basic_by_id.sql');
+    $query = $this->pdo->prepare($query);
+    $query->bindParam(':id', $id);
+    $query->execute();
+    return $query->fetch();
+    $query->closeCursor();
+  }
+
+  public function basic_user_by_name($name){
+    $query = file_get_contents('db/user/basic_by_name.sql');
+    $query = $this->pdo->prepare($query);
+    $query->bindParam(':name', $name);
+    $query->execute();
+    return $query->fetch();
+    $query->closeCursor();
+  }
+
+  public function grab_session($uid, $session){
+    print($session);
+    $query = file_get_contents('db/user/grab_session.sql');
+    $query = $this->pdo->prepare($query);
+    $query->bindParam(':uid', $uid);
+    $query->bindParam(':cookie', $sesion);
+    return $query->execute();
+    $query->closeCursor();
+  }
+
+  public function get_session($cookie){
+    $query = file_get_contents('db/user/get_session.sql');
+    $query = $this->pdo->prepare($query);
+    $query->bindParam(':cookie', $cookie);
+    $query->execute();
+    return $query->fetch();
+    $query->closeCursor();
   }
 }

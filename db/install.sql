@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS users (
   password TEXT ,
   pubkey TEXT UNIQUE,
   privkey TEXT UNIQUE,
+  iv TEXT,
   terms BOOLEAN 
 );
 
@@ -16,6 +17,6 @@ CREATE TABLE IF NOT EXISTS messages(
 );
 
 CREATE TABLE IF NOT EXISTS sessions(
-    cookie TEXT UNIQUE,
+    cookie BLOB UNIQUE,
     uid INTEGER)
 ;

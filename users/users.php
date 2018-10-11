@@ -7,7 +7,9 @@ require_once('config/db.php');
 
 use \DB\Conn as D;
 
+
 class User{
+  private $id;
   public $name;
   public $mail;
   public $public_key;
@@ -16,6 +18,14 @@ class User{
   private $method = "AES-256-CBC";
   private $private_key;
   public $err;
+  private $db;
+  private $password;
+
+  public function __construct(){
+    $this->err = [];
+    $this->db = D::get();
+    $logged_in = $this->am_i_in();
+  }
 
   public function register(){
     $err = [];
@@ -26,7 +36,7 @@ class User{
       if (empty($_POST['pwd-square']) ||  empty($_POST['pwd-circle']) || empty($_POST['pwd-triangle'])){
         $err[] = 'Please, provide the 3 passwords';
       }
-      $pwd = password_hash($_POST['pwd-square'].$_POST['pwd-circle'].$_POST['pwd-triangle'], PASSWORD_DEFAULT);
+      $pwd = password_hash($this->generate_pwd(), PASSWORD_DEFAULT);
       if ($this->mail != $umailconfirm){
         $err[] = 'Please, be sure to input the same address in both email and confirm email fields.';
       }
@@ -41,12 +51,46 @@ class User{
         $iv = random_bytes(16);
         $ok = $this->create_key_pair();
         if ($ok){
-          $db = D::get();
-          $db->insert_user($this->mail, $this->name, $pwd, $this->public_key, 1);
+          $this->db->insert_user($this->mail, $this->name, $pwd, $this->public_key, 1);
+          return True;
         }
       }
     }
     $this->err = $err;
+    return False;
+  }
+
+  private function log_in($name){
+    $u = $this->db->basic_user_by_name($name);
+    if (empty($u)){
+      $this->name = "Anonymous";
+      return False;
+    }else{
+      $this->name = $u['name'];
+      $this->password = $u['password'];
+      $this->id = $u['id'];
+      $this->authenticated = true; 
+    }
+    return True;
+  }
+
+  public function am_i_in(){
+    $c =$_COOKIE['wai'];
+    if (empty($c)){
+      setcookie('wai',random_bytes(256), time()+1*60*60*24, '/', 'security', $secure=false, $httponly=true  );
+      return False;
+    }else{
+      $uid = $this->db->get_session($c);
+      if (empty($uid)){
+        return False;
+      }else{
+        $u = $this->db->basic_user_by_id($uid);
+        $this->name = $u['name'];
+        $this->password = $u['password'];
+        $this->id = $u['id'];
+        return True;
+      }
+    }
   }
 
   public function save(){
@@ -74,17 +118,40 @@ class User{
     $sealed = "";
     $env_keys = [];
     openssl_seal( $message, $sealed_data , $env_keys , [$this->public_key, $dest->public_key] );
-    db.save_message(); 
+    $this->db.save_message(); 
   }
 
   private function reveal_message($message, $envelope){
     $key = decrypt_priv_key();
   }
 
+  private function generate_pwd(){
+    $pwd =  $_POST['pwd-square'].$_POST['pwd-circle'].$_POST['pwd-triangle'];
+    return $pwd; 
+  }
   public function authenticate(){
-    if (password_verify($_POST['pwd'], $this->pwd)){
+    $err = [];
+    $this->log_in($_POST['username']);
+    $pwd = $this->generate_pwd();
+    if (password_verify($pwd, $this->password)){
       $this->authenticated = True;
+      $this->grab_session();
+    }else{
+      $err[] = 'Something has gone wrong';
     }
+    if (empty($err)){
+      return True;
+    }else{
+      $this->err = $err;
+      return False;
+    }
+  }
+
+  private function grab_session(){
+    if (empty($_COOKIE['wai'])){
+      throw new  \Error("Cookie vazio");
+    }
+    $this->db->grab_session($this->id, $_COOKIE['wai']);
   }
 
   private function create_key_pair(){

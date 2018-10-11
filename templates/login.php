@@ -2,8 +2,8 @@
   <section class="login">
     <form method="post" >
 
-      <label for="username" name="username">Name: </label>
-      <input type="text" placeholder="Your username" >
+      <label for="username" >Name: </label>
+      <input type="text" name="username" placeholder="Your username" >
 
       <fieldset id="password">
           <legend>*** Passwords</legend>

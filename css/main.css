@@ -63,3 +63,20 @@ fieldset#password{
 label{
   margin: 5px;
 }
+.close-button{
+  border: solid thin silver;
+  border-radius: 50%;
+  display: inline-block;
+  text-align: center;
+  width: 20px;
+  line-height: 20px;
+  position: absolute;
+  right: 5px;
+  top: 5px;
+}
+.close-button:hover{
+  box-shadow: 1px 1px 1px 1px #afafaf;
+  cursor: pointer;
+}
+dialog{
+}
