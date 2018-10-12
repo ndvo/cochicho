@@ -1,6 +1,6 @@
 <h1><?php echo $data->title; ?></h1>
 
-<p><?php echo $data->content; ?></p>
+<p><?php echo empty($data->content)?"":$data->content ; ?></p>
 
 <p>Exchange messages with your friends without worrying about who else might be
 reading it</p>

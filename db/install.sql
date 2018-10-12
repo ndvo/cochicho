@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS messages(
 );
 
 CREATE TABLE IF NOT EXISTS sessions(
-    cookie BLOB UNIQUE,
-    uid INTEGER)
+    uid INTEGER UNIQUE,
+    cookie BLOB NOT NULL 
+    )
 ;

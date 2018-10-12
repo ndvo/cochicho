@@ -1,5 +1,5 @@
     <ul>
-      <?php if ( empty($data->user)): ?>
+      <?php if ( empty($data->user->authenticated)): ?>
       <li><a href="/register">Register</a></li>
       <li><a href="/login">Login</a></li>
       <?php else: ?>

@@ -3,7 +3,7 @@
 namespace DB;
 
 class Conn{
-  
+  private static $dbpath ="content/content.db" ;
   private $pdo;
   public static $instance;
   public static $statements;
@@ -19,10 +19,11 @@ class Conn{
 		return self::$instance;
 	}
 
-  private function connect(){
-    if ($this->pdo == null){
+  private function connect($reload = False){
+    if ($this->pdo == null or $reload == True){
       try{
-        $this->pdo = new \PDO("sqlite:content/content.db");
+        $database_path = 'sqlite:'.self::$dbpath;
+        $this->pdo = new \PDO($database_path);
         $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
       }catch (Exception $e){
         echo "Error";
@@ -33,6 +34,8 @@ class Conn{
   }
 
   public function install(){
+    rename(self::$dbpath, self::$dbpath.".bkp");
+    $this->connect($reload=True);
     $query = file_get_contents('db/install.sql');
     $affected = $this->pdo->exec($query);
     if ($affected === false){
@@ -80,12 +83,21 @@ class Conn{
     $query->closeCursor();
   }
 
+  public function destroy_session($uid, $session){
+    print_r([$uid, $session]);
+    $query = file_get_contents('db/user/destroy_session.sql');
+    $query = $this->pdo->prepare($query);
+    $query->bindParam(':u', $uid);
+    $query->bindParam(':c', $session);
+    return $query->execute();
+    $query->closeCursor();
+  }
+
   public function grab_session($uid, $session){
-    print($session);
     $query = file_get_contents('db/user/grab_session.sql');
     $query = $this->pdo->prepare($query);
-    $query->bindParam(':uid', $uid);
-    $query->bindParam(':cookie', $sesion);
+    $query->bindParam(':u', $uid);
+    $query->bindParam(':c', $session);
     return $query->execute();
     $query->closeCursor();
   }

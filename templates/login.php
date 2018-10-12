@@ -23,7 +23,7 @@
       </fieldset>
       <input type="submit" value="submit">
   </form>
-  <section>
+  </section>
   <section class="help">
     <h4>Help</h4>
     <details>

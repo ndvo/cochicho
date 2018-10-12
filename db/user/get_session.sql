@@ -1,1 +1,1 @@
-SELECT uid FROM sessions WHERE cookie = :cookie;
+SELECT uid FROM sessions WHERE cookie = :cookie LIMIT 1;

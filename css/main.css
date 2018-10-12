@@ -1,3 +1,6 @@
+
+
+/** General **/
 :root{
 --m-width: 95ch;
 --width: 90vw;
@@ -7,43 +10,17 @@ body{
   width: var(--width);
   margin: 1em auto;
   box-shadow: 0px 0px 5px 1px #fafafa;
-  font-family: sans-serif;
-}
-#logo{
-  font-size: 40px;
+  font-family: Times Georgia serif;
 }
 header{
   max-width: var(--m-width);
   margin: 0 auto;
   padding: 1em;
 }
-
-
 main{
   max-width: var(--m-width);
   margin: 0 auto;
   padding: 1em;
-}
-
-nav {
-  max-width: var(--m-width);
-  margin: 0 auto;
-  padding: 5px 10px;
-  border-bottom: solid thin silver;
-}
-
-
-nav li{
-  display: inline;
-  padding: 5px 10px;
-}
-
-nav li:hover{
-  background: #fafafa;
-}
-
-fieldset{
-  margin: 1em 0;
 }
 footer{
   border-top: solid thin silver;
@@ -54,6 +31,44 @@ footer{
   justify-content: space-between;
   padding: 1em 1em 2em 1em;
 }
+
+/** Header **/
+header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.logo{
+}
+.logo a {
+  text-decoration: none;
+}
+#logo{
+  font-size: 40px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/** Menu **/
+nav {
+  max-width: var(--m-width);
+  margin: 0 auto;
+  padding: 5px 10px;
+  border-bottom: solid thin silver;
+}
+nav li{
+  display: inline;
+  padding: 5px 10px;
+}
+nav li:hover{
+  background: #fafafa;
+}
+
+/** Forms **/
+fieldset{
+  margin: 1em 0;
+  padding: 3ch;
+}
 fieldset#password{
   display: flex;
   flex-direction: column;
@@ -63,6 +78,38 @@ fieldset#password{
 label{
   margin: 5px;
 }
+.help summary{
+  color:gray;
+}
+.help span.example{
+  color: gray;
+  display: block;
+  margin: 0 0 5px 5ch;
+}
+button{
+  background: white;
+  border: none;
+  border-radius: 3px;
+  box-shadow: 1px 1px 1px 1px silver;
+  padding: 1ch 2ch;
+  font-weight: bold;
+}
+button:hover{
+  box-shadow: 3px 3px 3px 3px silver;
+  cursor: pointer;
+}
+button[value="discard"]{
+  background: red;
+  color: white;
+}
+fieldset.message input, fieldset.message textarea{
+  width: 100%;
+}
+textarea{
+  padding: 3ch;
+}
+
+/** Dialogs **/
 .close-button{
   border: solid thin silver;
   border-radius: 50%;
@@ -80,3 +127,4 @@ label{
 }
 dialog{
 }
+

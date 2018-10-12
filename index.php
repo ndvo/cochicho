@@ -30,21 +30,25 @@ if ( $db == null){
 }
 if ($_SERVER['REQUEST_URI'] != '/admin/install'){
   $user = new User();
+}else{
+  $user = new stdClass();
 }
 
 $F_front_page = function($params, &$data, &$template){
   global $user;
-  $data->title = 'Welcome';
-  $template->content = 'templates/front.php';
-  if (empty($user->id)){
-    $data->content = 'Please, log in to the system';
+  if (empty($user->authenticated)){
+    $data->title = 'Welcome';
+    $template->content = 'templates/front.php';
+  }else{
+    $data->title = 'Overview';
+    $template->content = 'templates/panel.php';
   }
 };
 
 $F_install = function($params, &$data, &$template){
   global $db;
-  $data->title = "Instalation and upgrade";
-  $data->content = "Installing a new system's version";
+  $data->title = "Installation and upgrade";
+  $data->content = "Installation successful. If there was any old database, it was copied to the same folder with a .bkp extension. It will be overwritten if you install again.";
   $template->content = 'templates/install.php';
   $db->install();
 
@@ -83,7 +87,6 @@ $F_register = function($params, &$data, &$template){
   if (empty($_POST)){
     $template->content = 'templates/register.php';
     $data->title = 'Registration';
-    $data->user = True;
   }else{
     global $user;
     $ok = $user->register();
@@ -105,18 +108,32 @@ $F_dbdump = function($params, &$data, &$template){
   $template->content = 'templates/dbdump.php';
 };
 
+$F_compose = function ($params, &$data, &$template){
+  global $user;
+  $data->from = $user->name;
+  $template->content = 'templates/compose.php';
+};
+
+$F_logout = function ($params, &$data, &$template){
+  global $user;
+  $user->unauthenticate();
+};
+
+
 
 if (!$error){
   $params = [];
   $routes = [
+    '/^\/logout\/?$/'=> $F_logout,
     '/^\/dbdump\/?$/'=> $F_dbdump,
     '/^\/admin\/install\/?$/'=> $F_install,
+    '/^\/compose\/?$/'=>$F_compose,
     '/^\/login\/?$/'=> $F_login,
     '/^\/register\/?$/'=> $F_register,
     '/^\/?$/'=> $F_front_page,
     '/.*/' => $F_not_found,
   ];
-
+  $data->user = $user;
   foreach ($routes as $pattern => $function){
     $found = preg_match($pattern, $_SERVER['REQUEST_URI'], $params);
     if ($found == 1){
@@ -136,7 +153,6 @@ if (!$error){
    <link rel="stylesheet" type="text/css" href="/css/main.css">
 </head>
 <body>
-  <?php echo empty($warning)? '': $warning; ?>
   <header>
     <?php echo \Page\template_render($template->header, $data); ?>
   </header>
@@ -144,7 +160,7 @@ if (!$error){
     <?php echo \Page\template_render($template->navigation, $data); ?>
   </nav>
   <?php if (!empty($data->warning)): ?>
-  <dialog open >
+  <dialog class="warning" open >
     <?php echo  $data->warning ; ?>
       <span class="close-button" onclick="this.parentNode.removeAttribute('open');this.parentNode.addAttribute('close');">
         &times;

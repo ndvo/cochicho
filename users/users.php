@@ -13,7 +13,7 @@ class User{
   public $name;
   public $mail;
   public $public_key;
-  private $authenticated;
+  public $authenticated;
   private $iv;
   private $method = "AES-256-CBC";
   private $private_key;
@@ -30,7 +30,7 @@ class User{
   public function register(){
     $err = [];
     if (!empty($_POST)){
-      $this->name = $_POST['username'];
+      $this->name = trim($_POST['username']);
       $this->mail = $_POST['mail'];
       $umailconfirm = $_POST['mail2'];
       if (empty($_POST['pwd-square']) ||  empty($_POST['pwd-circle']) || empty($_POST['pwd-triangle'])){
@@ -77,10 +77,10 @@ class User{
   public function am_i_in(){
     $c =$_COOKIE['wai'];
     if (empty($c)){
-      setcookie('wai',random_bytes(256), time()+1*60*60*24, '/', 'security', $secure=false, $httponly=true  );
+      setcookie('wai', random_bytes(256), time()+1*60*60*24, '/', 'security', $secure=false, $httponly=true  );
       return False;
     }else{
-      $uid = $this->db->get_session($c);
+      $uid = $this->db->get_session($c)['uid'];
       if (empty($uid)){
         return False;
       }else{
@@ -129,6 +129,14 @@ class User{
     $pwd =  $_POST['pwd-square'].$_POST['pwd-circle'].$_POST['pwd-triangle'];
     return $pwd; 
   }
+
+  public function unauthenticate(){
+    $this->destroy_session();
+    $this->authenticated = False;
+
+  }
+
+
   public function authenticate(){
     $err = [];
     $this->log_in($_POST['username']);
@@ -145,6 +153,12 @@ class User{
       $this->err = $err;
       return False;
     }
+  }
+
+  private function destroy_session(){
+    setcookie("wai", "", time()-3600);
+    $this->db->destroy_session($this->id, $_COOKIE['wai']);
+
   }
 
   private function grab_session(){

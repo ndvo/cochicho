@@ -1,3 +1,2 @@
-INSERT INTO sessions 
-  (cookie, uid)
-  values (:cookie, :uid);
+REPLACE INTO sessions (cookie, uid)
+  VALUES (:c , :u) ;
