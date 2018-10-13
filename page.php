@@ -8,6 +8,7 @@ $template->header = 'templates/header.php';
 $template->navigation = 'templates/navigation.php';
 $template->content = 'templates/login.php';
 $template->footer = 'templates/footer.php';
+$template->warning = 'templates/warning.php';
 
 function template_render($file, $data){
   if (!file_exists($file)){
@@ -17,3 +18,4 @@ function template_render($file, $data){
   include $file;
   return ob_get_clean();
 }
+

@@ -45,12 +45,19 @@ $F_front_page = function($params, &$data, &$template){
   }
 };
 
+
+
 $F_install = function($params, &$data, &$template){
   global $db;
   $data->title = "Installation and upgrade";
-  $data->content = "Installation successful. If there was any old database, it was copied to the same folder with a .bkp extension. It will be overwritten if you install again.";
   $template->content = 'templates/install.php';
-  $db->install();
+  $results = $db->install();
+  if (!empty($results)){
+    $warning = new stdClass();
+    $warning->title = 'Errors occured during installation';
+
+  }
+  $data->content = "The installation process was completed. A backup of the old database was mada. Any older backup was destroyed. Your new database backup is within the same folder, with a .bup extension.";
 
 };
 
@@ -78,7 +85,10 @@ $F_login = function($params, &$data, &$template){
       $template->content = 'templates/login.php';
       $data->title = 'Something went wrong. Please, review your credentials!';
     }else{
-      $data->warning = "Welcome $user->name";
+      $data->warning = new stdClass();
+      $data->warning->title = "Login sucessful";
+      $data->warning->content = "<p>Welcome $user->name.</p>";
+      $template->content = "";
     }
   }
 };
@@ -130,7 +140,7 @@ if (!$error){
     '/^\/compose\/?$/'=>$F_compose,
     '/^\/login\/?$/'=> $F_login,
     '/^\/register\/?$/'=> $F_register,
-    '/^\/?$/'=> $F_front_page,
+    '/^(\/panel)?\/?$/'=> $F_front_page,
     '/.*/' => $F_not_found,
   ];
   $data->user = $user;
@@ -161,7 +171,7 @@ if (!$error){
   </nav>
   <?php if (!empty($data->warning)): ?>
   <dialog class="warning" open >
-    <?php echo  $data->warning ; ?>
+    <?php echo  \Page\template_render($template->warning, $data);; ?>
       <span class="close-button" onclick="this.parentNode.removeAttribute('open');this.parentNode.addAttribute('close');">
         &times;
       </span>

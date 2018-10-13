@@ -6,7 +6,7 @@
     From: <input disabled type="text" placeholder="From" value ="<?php echo $data->from ;?>" >
   </label>
   <label to="to">
-    To: <input type="text" name="to" placeholder="To" value="<?php echo empty($data->to)?"":$data->to ;?>">
+    To: <input type="text" name="to" placeholder="To" value="<?php echo empty($data->to)?"":$data->to ;?>" list="ulist" >
   </label>
   </fieldset>
   <fieldset class="message">
@@ -24,4 +24,11 @@
   <button type="submit" name="action" value="save">Save for later</button>
   <button type="submit" name="action" value="send">Send</button>
 
+<datalist id="ulist">
+  <?php if ( !empty($data->ulist)): foreach ($data->ulist as $u): ?>
+  <option> <?php echo $u ; ?> </option>
+  <?php endforeach; endif; ?>
+</datalist>
+
 </form>
+
