@@ -88,6 +88,7 @@ class User{
         $this->name = $u['name'];
         $this->password = $u['password'];
         $this->id = $u['id'];
+        $this->authenticated = true;
         return True;
       }
     }
