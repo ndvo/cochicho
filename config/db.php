@@ -40,7 +40,7 @@ class Conn{
     $affected = $this->pdo->exec($query);
     if ($affected === false){
       $err = $this->pdo->errorInfo();
-      print_r( $err);
+      return $err;
     }
   }
 
@@ -70,8 +70,9 @@ class Conn{
     $query = $this->pdo->prepare($query);
     $query->bindParam(':id', $id);
     $query->execute();
-    return $query->fetch();
+    $result =  $query->fetch();
     $query->closeCursor();
+    return $result;
   }
 
   public function basic_user_by_name($name){
@@ -79,18 +80,26 @@ class Conn{
     $query = $this->pdo->prepare($query);
     $query->bindParam(':name', $name);
     $query->execute();
-    return $query->fetch();
+    $result =  $query->fetch();
     $query->closeCursor();
+    return $result;
+  }
+
+  public function all_usernames(){
+    $query = file_get_contents('db/user/all_names.sql');
+    $result = $query->execute();
+    $query->closeCursor();
+    return $result;
   }
 
   public function destroy_session($uid, $session){
-    print_r([$uid, $session]);
     $query = file_get_contents('db/user/destroy_session.sql');
     $query = $this->pdo->prepare($query);
     $query->bindParam(':u', $uid);
     $query->bindParam(':c', $session);
-    return $query->execute();
+    $result = $query->execute();
     $query->closeCursor();
+    return $result;
   }
 
   public function grab_session($uid, $session){
@@ -98,16 +107,17 @@ class Conn{
     $query = $this->pdo->prepare($query);
     $query->bindParam(':u', $uid);
     $query->bindParam(':c', $session);
-    return $query->execute();
+    $result = $query->execute();
     $query->closeCursor();
+    return $result;
   }
 
   public function get_session($cookie){
     $query = file_get_contents('db/user/get_session.sql');
     $query = $this->pdo->prepare($query);
     $query->bindParam(':cookie', $cookie);
-    $query->execute();
-    return $query->fetch();
+    $result = $query->execute();
     $query->closeCursor();
+    return $result;
   }
 }
