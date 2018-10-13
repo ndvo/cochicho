@@ -75,15 +75,15 @@ class User{
   }
 
   public function am_i_in(){
-    $c =$_COOKIE['wai'];
-    if (empty($c)){
+    if (empty($_COOKIE['wai'])){
       setcookie('wai', random_bytes(256), time()+1*60*60*24, '/', 'security', $secure=false, $httponly=true  );
       return False;
     }else{
-      $uid = $this->db->get_session($c)['uid'];
+      $uid = $this->db->get_session($_COOKIE['wai']);
       if (empty($uid)){
         return False;
       }else{
+        $uid = $uid['uid'];
         $u = $this->db->basic_user_by_id($uid);
         $this->name = $u['name'];
         $this->password = $u['password'];
