@@ -6,6 +6,7 @@ error_reporting(E_ALL);
 
 require_once('config/db.php');
 require_once('users/users.php');
+require_once('messages/messages.php');
 require_once('page.php');
 
 
@@ -19,6 +20,7 @@ session_start(
 
 use \DB\Conn as D;
 use \User\User as User;
+use \Message\Message as Message;
 
 $db = D::get();
 $data = new stdClass();
@@ -126,10 +128,19 @@ $F_dbdump = function($params, &$data, &$template){
 $F_compose = function ($params, &$data, &$template){
   global $user;
   global $db;
-  $data->from = $user->name;
-  $usernames = $db->all_usernames();
-  $data->ulist = array_column($usernames, 'name');
-  $template->content = 'templates/compose.php';
+  if (empty($_POST)){
+    $data->from = $user->name;
+    $usernames = $db->all_usernames();
+    $data->ulist = array_column($usernames, 'name');
+    $template->content = 'templates/compose.php';
+  }else{
+    $action = $_POST['action'];
+    $_POST['from'] = $user->name;
+    $envelope = Message::envelope_from_post(time()); 
+    print_r(["teste", $envelope, $_POST]);
+    $m = new Message($mid=False, $envelope=$envelope);
+    $m->store_message();
+  }
 };
 
 $F_logout = function ($params, &$data, &$template){

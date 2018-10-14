@@ -29,13 +29,17 @@ class User{
     return false;
   }
 
-  public function __construct($name = false){
+  public function __construct($id = false, $name = false){
     $this->err = [];
     $this->db = D::get();
-    if (!$name){
+    if (empty($id) and empty($name)){
       $logged_in = $this->am_i_in();
     }else{
-      $this->load_by_name($name);
+      if (!empty($id)){
+        $this->load_by_id($id);
+      }elseif(!empty($name)){
+        $this->load_by_name($name);
+      }
     }
   }
 
@@ -122,6 +126,23 @@ class User{
         $this->authenticated = true;
         return True;
       }
+    }
+  }
+
+  private function load_by_id($id){
+    $id = intval($id);
+    $u = $this->db->full_user_by_id($id);
+    if (!empty($u['name'])){
+      $this->name = $u['name'];
+      $this->id = $u['id'];
+      $this->public_key = $u['pubkey'];
+      $this->mail = $u['mail'];
+      $this->accepted_terms = $u['terms'];
+      $this->create_secret();
+      $this->authenticated = true;
+      return  true;
+    }else{
+      return false;
     }
   }
 

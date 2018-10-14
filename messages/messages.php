@@ -9,8 +9,8 @@ use \User\User as User;
 
 global $purifier;
 if (empty($purifier)){
-  $config = HTMLPurifier_Config::createDefault();
-  $purifier = new HTMLPurifier($config);
+  $config = \HTMLPurifier_Config::createDefault();
+  $purifier = new \HTMLPurifier($config);
 }
 
 class Message{
@@ -28,7 +28,7 @@ class Message{
   
   static function is_invalid_envelope_array($e_arr){
     $err = [];
-    if (empty($e_arry)){
+    if (empty($e_arr)){
       $err[] = "Envelope is empty";
     }
     if (!is_array($e_arr)){
@@ -40,7 +40,7 @@ class Message{
     if (empty($e_arr['to'])){
       $err[] = "The recipient (to) is missing";
     }
-    if (empty($e_arry)){
+    if (empty($e_arr)){
       $err[] = "Message is empty";
     }
     if (!is_array($e_arr)){
@@ -63,20 +63,45 @@ class Message{
     if (empty($err)){
       return False;
     }else{
-      array_push($this->err, ...$err);
       return $err;
     }
   }
 
   static function htmlsafe($string){
+    global $purifier;
     $string = $purifier->purify($string);
     return $string; 
+  }
+
+  static function envelope_from_post($time=False){
+    $e = [
+      'from'=>false,
+      'to'=>false,
+      'title'=>false,
+      'body'=>false,
+      'time'=>intval($time)
+    ];
+    $e['from'] =$_POST["from"];
+    $e['to'] =$_POST["to"];
+    $e["title"] = $_POST["title"];
+    $e["body"] = $_POST["body"];
+    if (empty($time)){
+      $e["time"] = time();
+    }
+    $err = self::is_invalid_envelope_array($e);
+    if (!empty($err)){
+      foreach ($err as $e){
+        error_log($e);
+      }
+    }else{
+      return $e;
+    }
   }
   
   public function __construct($mid = False , $envelope=[]){
     if ($mid == False){
-      if (self::is_invalid_envelope_array($message)){
-        throw new Error("Invalid message array. Messages must be either built from an id or from envelope array.");
+      if (self::is_invalid_envelope_array($envelope)){
+        throw new \Error("Invalid message array. Messages must be either built from an id or from envelope array.");
       }
       $this->build_from_values($envelope);
     }else{
@@ -131,12 +156,16 @@ class Message{
   }
 
   public function store_message(){
+    global $db;
     $message = serialize($this->build_envelope());
+    print_r('from: '. $this->dirty_from."    ieao ");
     $from = new User($this->dirty_from);
     $to = new User($this->dirty_to);
-    $ekeys = [$from->id=>$from->public_key, $to->id=>$to->public_key];
-    openssl_seal( $message, $sealed, $ekeys );
-    $db->message_store($from->id, $to->id, $encrypted_message, serialize($ekeys) );
+    print_r([$from, $to]);
+    $keys = [$from->id=>$from->public_key, $to->id=>$to->public_key];
+    print_r($keys);
+    openssl_seal( $message, $sealed, $ekeys, $keys  );
+    $db->store_message($from->id, $to->id, $sealed, serialize($ekeys) );
     $to = $this->dirty_to;
   }
 
