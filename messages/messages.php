@@ -3,7 +3,6 @@
 namespace Message;
 
 require_once 'htmlpurifier/library/HTMLPurifier.auto.php';
-require_once 'users/get_session.sql';
 
 use \User\User as User;
 
@@ -158,12 +157,9 @@ class Message{
   public function store_message(){
     global $db;
     $message = serialize($this->build_envelope());
-    print_r('from: '. $this->dirty_from."    ieao ");
     $from = new User($this->dirty_from);
     $to = new User($this->dirty_to);
-    print_r([$from, $to]);
     $keys = [$from->id=>$from->public_key, $to->id=>$to->public_key];
-    print_r($keys);
     openssl_seal( $message, $sealed, $ekeys, $keys  );
     $db->store_message($from->id, $to->id, $sealed, serialize($ekeys) );
     $to = $this->dirty_to;
