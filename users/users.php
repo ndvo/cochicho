@@ -47,7 +47,7 @@ class User{
     $err = [];
     if (!empty($_POST)){
       $uname = trim($_POST['username']);
-      if ( !$self::is_valid_name($uname) ){
+      if ( !self::is_valid_name($uname) ){
         $err[] = 'The username chosen is invalid.';
       } 
       if (empty($_POST['pwd-square']) ||  empty($_POST['pwd-circle']) || empty($_POST['pwd-triangle'])){
@@ -219,6 +219,7 @@ class User{
     if (password_verify($pwd, $this->password)){
       $this->create_secret($pwd);
       $this->authenticated = True;
+      $this->load_by_id($this->id);
       $this->grab_session();
     }else{
       $err[] = 'Something has gone wrong';

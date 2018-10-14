@@ -26,7 +26,6 @@ class Conn{
         $this->pdo = new \PDO($database_path);
         $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
       }catch (Exception $e){
-        echo "Error";
         die("Connection failed: ".$e->getMessage());
       }
     }

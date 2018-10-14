@@ -25,7 +25,6 @@ use \Message\Message as Message;
 $db = D::get();
 $data = new stdClass();
 $error = false;
-
 if ( $db == null){
   $data->title = 'Oooops! Something went wrong';
   $error = 'It was not possible to connect to the database';
@@ -54,7 +53,7 @@ $F_install = function($params, &$data, &$template){
   global $db;
   $data->title = "Installation and upgrade";
   $template->content = 'templates/install.php';
-  $results = $db->install();
+ $results = $db->install();
   if (!empty($results)){
     $warning = new stdClass();
     $warning->title = 'Errors occured during installation';
@@ -83,6 +82,7 @@ $F_login = function($params, &$data, &$template){
   }else{
     $ok = $user->authenticate();
     $data->user = $user;
+    $data->title = "My profile";
     if (!$ok){
       $err = "<ul>\n";
       foreach ($user->err as $e){
@@ -158,7 +158,7 @@ if (!$error){
     '/^\/dbdump\/?$/'=> $F_dbdump,
     '/^\/admin\/install\/?$/'=> $F_install,
     '/^\/compose\/?$/'=>$F_compose,
-    '/^\/login\/?$/'=> $F_login,
+    '/^\/(login|profile)\/?$/'=> $F_login,
     '/^\/register\/?$/'=> $F_register,
     '/^(\/panel)?\/?$/'=> $F_front_page,
     '/.*/' => $F_not_found,
@@ -177,10 +177,11 @@ if (!$error){
 }
 
 ?>
-
+<!DOCTYPE html>
 <html>
 <head>
-   <link rel="stylesheet" type="text/css" href="/css/main.css">
+  <meta charset="utf-8">
+  <link rel="stylesheet" type="text/css" href="/css/main.css">
 </head>
 <body>
   <header>
