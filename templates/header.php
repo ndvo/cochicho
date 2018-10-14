@@ -3,7 +3,7 @@
     </section>
     <?php if (!empty($data->user->authenticated)): ?>
     <section class="profile">
-      <a href="profile" title="Check out your profile">Hi <?php echo $data->user->name; ?></a>
+      <a href="profile" title="Check out your profile">Hi <?php  echo $data->user->name; ?></a>
     </section>
     <?php endif; ?>
 

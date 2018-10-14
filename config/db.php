@@ -53,16 +53,28 @@ class Conn{
     $this->pdo->commit();
   }
 
-  public function insert_user($mail, $name, $password, $pubkey, $terms){
+  public function insert_user($mail, $name, $password, $pubkey, $privkey, $iv, $terms){
     $query = file_get_contents('db/create_user.sql');
     $query = $this->pdo->prepare($query);
     $query->bindParam(':mail', $mail);
     $query->bindParam(':name', $name);
     $query->bindParam(':password', $password);
     $query->bindParam(':pubkey', $pubkey);
+    $query->bindParam(':privkey', $privkey);
+    $query->bindParam(':iv', $iv);
     $query->bindParam(':terms', $terms);
     $query->execute();
     $query->closeCursor();
+  }
+
+  public function full_user_by_id($id){
+    $query = file_get_contents('db/user/full_by_id.sql');
+    $query = $this->pdo->prepare($query);
+    $query->bindParam(':id', $id);
+    $query->execute();
+    $result =  $query->fetch();
+    $query->closeCursor();
+    return $result;
   }
 
   public function basic_user_by_id($id){
@@ -87,7 +99,9 @@ class Conn{
 
   public function all_usernames(){
     $query = file_get_contents('db/user/all_names.sql');
-    $result = $query->execute();
+    $query = $this->pdo->prepare($query);
+    $query->execute();
+    $result = $query->fetchAll();
     $query->closeCursor();
     return $result;
   }
@@ -116,8 +130,42 @@ class Conn{
     $query = file_get_contents('db/user/get_session.sql');
     $query = $this->pdo->prepare($query);
     $query->bindParam(':cookie', $cookie);
+    $query->execute();
+    $result = $query->fetch();
+    $query->closeCursor();
+    return $result;
+  }
+
+  public function store_message($from, $to, $message, $ekeys){
+    $query = file_get_contents('db/message/store_message.sql');
+    $query = $this->pdo->prepare($query);
+    $query->bindParam(':from', $from);
+    $query->bindParam(':to', $to);
+    $query->bindParam(':message', $message);
+    $query->bindParam(':ekeys', $ekeys);
     $result = $query->execute();
     $query->closeCursor();
     return $result;
   }
+
+  public function retrieve_message($mid){
+    $query = file_get_contents('db/message/message.sql');
+    $query = $this->pdo->prepare($query);
+    $query->bindParam(':mid', $mid);
+    $result = $query->execute();
+    $result = $query->fetchAll();
+    $query->closeCursor();
+    return $result;
+  }
+
+  public function retrieve_user_messages($uid){
+    $query = file_get_contents('db/message/user_messages.sql');
+    $query = $this->pdo->prepare($query);
+    $query->bindParam(':uid', $uid);
+    $result = $query->execute();
+    $result = $query->fetchAll();
+    $query->closeCursor();
+    return $result;
+  }
+
 }

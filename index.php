@@ -40,6 +40,7 @@ $F_front_page = function($params, &$data, &$template){
     $data->title = 'Welcome';
     $template->content = 'templates/front.php';
   }else{
+    $data->user = $user;
     $data->title = 'Overview';
     $template->content = 'templates/panel.php';
   }
@@ -68,12 +69,18 @@ $F_not_found = function($params, &$data, &$template){
 };
 
 $F_login = function($params, &$data, &$template){
+  $template->content = 'templates/login.php';
+  global $user;
   if (empty($_POST)){
     $template->content = 'templates/login.php';
-    $data->title = 'Please, provide your credentials!';
+    if ($user->authenticated){
+      $data->title = "Welcome $user->name";
+    }else{
+      $data->title = 'Please, provide your credentials!';
+    }
   }else{
-    global $user;
     $ok = $user->authenticate();
+    $data->user = $user;
     if (!$ok){
       $err = "<ul>\n";
       foreach ($user->err as $e){
@@ -82,13 +89,11 @@ $F_login = function($params, &$data, &$template){
       $err.= "</ul>";
       $data->warning = $err;
       $data->title = "";
-      $template->content = 'templates/login.php';
       $data->title = 'Something went wrong. Please, review your credentials!';
     }else{
       $data->warning = new stdClass();
       $data->warning->title = "Login sucessful";
       $data->warning->content = "<p>Welcome $user->name.</p>";
-      $template->content = "";
     }
   }
 };
@@ -120,13 +125,17 @@ $F_dbdump = function($params, &$data, &$template){
 
 $F_compose = function ($params, &$data, &$template){
   global $user;
+  global $db;
   $data->from = $user->name;
+  $usernames = $db->all_usernames();
+  $data->ulist = array_column($usernames, 'name');
   $template->content = 'templates/compose.php';
 };
 
 $F_logout = function ($params, &$data, &$template){
   global $user;
   $user->unauthenticate();
+  $template->content = "templates/logout.php";
 };
 
 

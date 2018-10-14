@@ -1,3 +1,18 @@
+<?php if ($data->user->authenticated): ?>
+  <h2><?php echo $data->title; ?></h2>
+  <p>Here is the data we have about you.</p>
+  
+  <dl class="user data">
+    <dt>Name</dt><dd><?php echo $data->user->name; ?></dd>
+    <dt>Email</dt><dd><?php echo $data->user->mail; ?></dd>
+    <dt>Accepted the terms of use?</dt><dd><?php echo $data->user->accepted_terms?"Yes":"No"; ?></dd>
+    <dt>Public_key</dt><dd><?php echo $data->user->public_key; ?></dd>
+  </dl>
+  
+
+
+<?php else: ?>
+
   <h1>Please, provide your credentials.</h1>
   <section class="login">
     <form method="post" >
@@ -33,3 +48,5 @@
       <summary>Three passwords?</summary>
     </details>
   </section>
+
+<?php endif; ?>

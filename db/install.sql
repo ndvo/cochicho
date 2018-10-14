@@ -13,7 +13,8 @@ CREATE TABLE IF NOT EXISTS messages(
   id INTEGER PRIMARY KEY,
   content TEXT,
   recipient INTEGER NOT NULL references users(id),
-  sender    INTEGER NOT NULL references users(id)
+  sender    INTEGER NOT NULL references users(id),
+  ekeys TEXT
 );
 
 CREATE TABLE IF NOT EXISTS sessions(

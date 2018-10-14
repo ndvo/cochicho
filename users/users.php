@@ -9,33 +9,48 @@ use \DB\Conn as D;
 
 
 class User{
-  private $id;
+  public $id;
   public $name;
   public $mail;
   public $public_key;
   public $authenticated;
   private $iv;
   private $method = "AES-256-CBC";
-  private $private_key;
+  private $encrypted_key;
   public $err;
   private $db;
   private $password;
+  public $accepted_terms;
 
-  public function __construct(){
+  static function is_valid_name($name){
+    if (preg_match("/[\d\w+@-][\d\w\.+ '@-]+[\d\w+@-]/", $name)){
+      return true;
+    }
+    return false;
+  }
+
+  public function __construct($name = false){
     $this->err = [];
     $this->db = D::get();
-    $logged_in = $this->am_i_in();
+    if (!$name){
+      $logged_in = $this->am_i_in();
+    }else{
+      $this->load_by_name($name);
+    }
   }
 
   public function register(){
     $err = [];
     if (!empty($_POST)){
-      $this->name = trim($_POST['username']);
-      $this->mail = $_POST['mail'];
-      $umailconfirm = $_POST['mail2'];
+      $uname = trim($_POST['username']);
+      if ( !$self::is_valid_name($uname) ){
+        $err[] = 'The username chosen is invalid.';
+      } 
       if (empty($_POST['pwd-square']) ||  empty($_POST['pwd-circle']) || empty($_POST['pwd-triangle'])){
         $err[] = 'Please, provide the 3 passwords';
       }
+      $this->mail = $_POST['mail'];
+      $umailconfirm = $_POST['mail2'];
       $pwd = password_hash($this->generate_pwd(), PASSWORD_DEFAULT);
       if ($this->mail != $umailconfirm){
         $err[] = 'Please, be sure to input the same address in both email and confirm email fields.';
@@ -47,11 +62,14 @@ class User{
         $err[] = 'The use of this service is conditioned to the acceptance of the Terms of Use.';
       }
       if (empty($err)){
-        $this->secret = hash('sha256', $pwd);
-        $iv = random_bytes(16);
+        $this->name = $uname;
+        $this->create_secret($pwd);
+        $this->iv = random_bytes(16);
         $ok = $this->create_key_pair();
         if ($ok){
-          $this->db->insert_user($this->mail, $this->name, $pwd, $this->public_key, 1);
+          $this->db->insert_user(
+            $this->mail, $this->name, $pwd, $this->public_key, $this->encrypted_key, $this->iv, 1
+          );
           return True;
         }
       }
@@ -60,21 +78,31 @@ class User{
     return False;
   }
 
-  private function log_in($name){
-    $u = $this->db->basic_user_by_name($name);
-    if (empty($u)){
-      $this->name = "Anonymous";
-      return False;
-    }else{
-      $this->name = $u['name'];
-      $this->password = $u['password'];
-      $this->id = $u['id'];
-      $this->authenticated = true; 
-    }
-    return True;
+  private function create_secret($pwd=False){
+      if ($pwd){
+        $this->secret = hash('sha256', $pwd);
+        $_SESSION['secret'] = $this->secret;
+      }elseif(!empty($_SESSION['secret'])){
+        $this->secret = $_SESSION['secret'];
+      }
   }
 
-  public function am_i_in(){
+
+  private function log_in($name){
+    if (self::is_valid_name($name)){
+      $u = $this->db->basic_user_by_name($name);
+      if (!empty($u)){
+        $this->name = $u['name'];
+        $this->password = $u['password'];
+        $this->id = $u['id'];
+        return True;
+      }
+    }
+    $this->name = "Anonymous";
+    return False;
+  }
+
+  private function am_i_in(){
     if (empty($_COOKIE['wai'])){
       setcookie('wai', random_bytes(256), time()+1*60*60*24, '/', 'security', $secure=false, $httponly=true  );
       return False;
@@ -84,14 +112,32 @@ class User{
         return False;
       }else{
         $uid = $uid['uid'];
-        $u = $this->db->basic_user_by_id($uid);
+        $u = $this->db->full_user_by_id($uid);
         $this->name = $u['name'];
-        $this->password = $u['password'];
         $this->id = $u['id'];
+        $this->public_key = $u['pubkey'];
+        $this->mail = $u['mail'];
+        $this->accepted_terms = $u['terms'];
+        $this->create_secret();
         $this->authenticated = true;
         return True;
       }
     }
+  }
+
+  private function load_by_name($name){
+    if (self::is_valid_name($name)){
+      $u = $this->db->full_user_by_name($name);
+      if (!empty($u['name'])){
+        $this->name = $u['name'];
+        $this->id = $u['id'];
+        $this->public_key = $u['pubkey'];
+        $this->mail = $u['mail'];
+        $this->accepted_terms = $u['terms'];
+        return True;
+      }
+    }
+    return False;
   }
 
   public function save(){
@@ -108,7 +154,7 @@ class User{
   public function check_message_signature($message){
   }
 
-  public function cipher_message($message){
+  public function encrypt($message){
   }
 
 
@@ -122,8 +168,15 @@ class User{
     $this->db.save_message(); 
   }
 
-  private function reveal_message($message, $envelope){
+  public function reveal_message($message, $ekeys){
     $key = decrypt_priv_key();
+    $ok = openssl_open($message, $result, $ekeys[$this->id], $key);
+    if ($ok){
+      return $result;
+    }else{
+      return False;
+    }
+    openssl_free_key($key);
   }
 
   private function generate_pwd(){
@@ -134,7 +187,7 @@ class User{
   public function unauthenticate(){
     $this->destroy_session();
     $this->authenticated = False;
-
+    $_SESSION['secret'] = "";
   }
 
 
@@ -143,6 +196,7 @@ class User{
     $this->log_in($_POST['username']);
     $pwd = $this->generate_pwd();
     if (password_verify($pwd, $this->password)){
+      $this->create_secret($pwd);
       $this->authenticated = True;
       $this->grab_session();
     }else{
@@ -157,9 +211,10 @@ class User{
   }
 
   private function destroy_session(){
-    setcookie("wai", "", time()-3600);
-    $this->db->destroy_session($this->id, $_COOKIE['wai']);
-
+    if (!empty($_COOKIE["wai"])){
+      setcookie("wai", "", time()-3600);
+      $this->db->destroy_session($this->id, $_COOKIE['wai']);
+    }
   }
 
   private function grab_session(){
@@ -175,19 +230,19 @@ class User{
       'private_key_type' => OPENSSL_KEYTYPE_RSA,
     ]);
     if (openssl_pkey_export ($res, $privkey)){
-      $this->private_key = $privkey;
+      $this->encrypt_priv_key($privkey);
       $pub = openssl_pkey_get_details($res);
       $this->public_key = $pub["key"];
       return true;
     }
   }
 
-  private function encrypt_priv_key(){
-    $output = openssl_encrypt($this->privkey, $this->method, $this->secret, 0, $this->iv);
+  private function encrypt_priv_key($privkey){
+    $output = openssl_encrypt($privkey, $this->method, $this->secret, 0, $this->iv);
     $output = base64_encode($output);
     $this->encrypted_key = $output;
   }
-
+  
   private function decrypt_priv_key(){
     return openssl_decrypt(base64_decode($this->encrypted_key), $this->method, $this->secret, 0, $this->iv);
   }

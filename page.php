@@ -6,7 +6,7 @@ $template = new \stdClass();
 $template->html = 'templates/html.php';
 $template->header = 'templates/header.php';
 $template->navigation = 'templates/navigation.php';
-$template->content = 'templates/login.php';
+$template->content = 'templates/blank.php';
 $template->footer = 'templates/footer.php';
 $template->warning = 'templates/warning.php';
 

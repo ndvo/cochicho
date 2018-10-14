@@ -128,3 +128,14 @@ textarea{
 dialog{
 }
 
+
+/* User profile page*/
+
+dl.user.data{
+  border:  dashed thin silver;
+  background: #fefefe;
+  padding: 3ch;
+}
+dl.user.data dt{
+  font-weight: bold;
+}

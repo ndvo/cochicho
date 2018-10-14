@@ -25,17 +25,17 @@
           on: <?php echo date('l jS \of F Y h:i:s A') ; ?>
         </div>
         <div class="actions">
-          <form>
+          <form method="post">
             <input type="hidden" name="action" value="reply">
             <input type="hidden" name="msg" value="<?php echo $m->mid; ?>">
             <button type="submit">Reply</button>
           </form>
-          <form>
+          <form method="post">
             <input type="hidden" name="action" value="delete">
             <input type="hidden" name="msg" value="<?php echo $m->mid; ?>">
             <button type="submit">Delete</button>
           </form>
-          <form>
+          <form method="post">
             <input type="hidden" name="action" value="unread">
             <input type="hidden" name="msg" value="<?php echo $m->mid; ?>">
             <button type="submit">Mark as unread</button>
