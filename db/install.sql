@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS messages(
   id INTEGER PRIMARY KEY,
-  content TEXT,
+  content TEXT NOT NULL,
   recipient INTEGER NOT NULL references users(id),
   sender    INTEGER NOT NULL references users(id),
   ekeys TEXT

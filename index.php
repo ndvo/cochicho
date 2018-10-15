@@ -37,6 +37,7 @@ if ($_SERVER['REQUEST_URI'] != '/admin/install'){
 
 $F_front_page = function($params, &$data, &$template){
   global $user;
+  global $db;
   if (empty($user->authenticated)){
     $data->title = 'Welcome';
     $template->content = 'templates/front.php';
@@ -44,6 +45,16 @@ $F_front_page = function($params, &$data, &$template){
     $data->user = $user;
     $data->title = 'Overview';
     $template->content = 'templates/panel.php';
+    if (!empty($_SESSION['message'])){
+      $data->warning = $_SESSION['message'];
+      unset($_SESSION['message']);
+    }
+    $messages = $db->retrieve_user_messages($user->id);
+    $m = [];
+    foreach ($messages as $me){
+      $m[] = new Message($encrypted=True, $me);
+    }
+    $data->messages = $m;
   }
 };
 
@@ -135,11 +146,18 @@ $F_compose = function ($params, &$data, &$template){
     $template->content = 'templates/compose.php';
   }else{
     $action = $_POST['action'];
-    $_POST['from'] = $user->name;
-    $envelope = Message::envelope_from_post(time()); 
-    print_r(["teste", $envelope, $_POST]);
-    $m = new Message($mid=False, $envelope=$envelope);
-    $m->store_message();
+    if ($action == 'send'){
+      $_POST['from'] = $user->name;
+      $envelope = Message::envelope_from_post(time()); 
+      $m = new Message($encrypted=False, $envelope=$envelope);
+      $ok = $m->store_message();
+      if ($ok){
+        $_SESSION['message'] = "Your message has been sent.";
+        $template->content = 'templates/message.php';
+        header("Location: /panel");
+        die();
+      }
+    }
   }
 };
 
@@ -149,12 +167,16 @@ $F_logout = function ($params, &$data, &$template){
   $template->content = "templates/logout.php";
 };
 
+$F_about = function ($params, &$data, &$template){
+  $template->content = "templates/about.php";
+};
 
 
 if (!$error){
   $params = [];
   $routes = [
     '/^\/logout\/?$/'=> $F_logout,
+    '/^\/about\/?$/'=> $F_about,
     '/^\/dbdump\/?$/'=> $F_dbdump,
     '/^\/admin\/install\/?$/'=> $F_install,
     '/^\/compose\/?$/'=>$F_compose,
@@ -175,7 +197,6 @@ if (!$error){
     $not_found([], $data, $template);
   }
 }
-
 ?>
 <!DOCTYPE html>
 <html>

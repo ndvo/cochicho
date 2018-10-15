@@ -1,1 +1,1 @@
-SELECT id, name, mail,  pubkey, terms FROM users WHERE id = :id ;
+SELECT id, name, mail,  pubkey, privkey, iv, terms FROM users WHERE id = :id ;

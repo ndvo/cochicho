@@ -7,4 +7,5 @@
       <li><a href="/settings">Settings</a></li>
       <li><a href="/logout">Logout</a></li>
       <?php endif; ?>
+      <li><a href="/about">About this project</a></li>
     </ul>

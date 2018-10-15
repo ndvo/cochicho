@@ -97,14 +97,21 @@ class Message{
     }
   }
   
-  public function __construct($mid = False , $envelope=[]){
-    if ($mid == False){
+  public function __construct($encrypted = False , $envelope=[]){
+    $this->body = "";
+    if ($encrypted == False){
       if (self::is_invalid_envelope_array($envelope)){
         throw new \Error("Invalid message array. Messages must be either built from an id or from envelope array.");
       }
       $this->build_from_values($envelope);
     }else{
-      $m = $db->retrieve_message($mid);
+      //$m = $db->retrieve_message($mid);
+      $ok = $this->decrypt_message(
+        $envelope['content'],
+        $envelope['ekeys'],
+        $envelope['sender'],
+        $envelope['recipient']
+        );
     }
   }
 
@@ -157,24 +164,27 @@ class Message{
   public function store_message(){
     global $db;
     $message = serialize($this->build_envelope());
-    $from = new User($this->dirty_from);
-    $to = new User($this->dirty_to);
-    $keys = [$from->id=>$from->public_key, $to->id=>$to->public_key];
+    $from = new User($id=False, $name=$this->dirty_from);
+    $to = new User($id=False, $name=$this->dirty_to);
+    $keys = [ $from->id => $from->public_key, $to->id=>$to->public_key];
     openssl_seal( $message, $sealed, $ekeys, $keys  );
-    $db->store_message($from->id, $to->id, $sealed, serialize($ekeys) );
-    $to = $this->dirty_to;
+    $result = $db->store_message($from->id, $to->id, $sealed, serialize($ekeys) );
+    return $result;
   }
 
 
-  private function decrypt_message($message, $ekeys){
+  private function decrypt_message($message, $ekeys, $from, $to){
     global $user;
-    $e_arr = $user->reveal_message($message, $ekeys);
+    $e_arr = $user->reveal_message($message, unserialize($ekeys), $from, $to );
     if ($e_arr){
-      $this->build_from_values($e_arr);
+      $arr = $this->build_from_values(unserialize($e_arr));
+      return $arr;
     }else{
       $this->err[] = 'User could not decrypt the message';
+      return False;
     }
   }
+
 
 }
 

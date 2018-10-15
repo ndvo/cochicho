@@ -1,4 +1,4 @@
 INSERT INTO messages
-  ( content, recipient, sender )
+  ( content, recipient, sender, ekeys )
   values
-  (:message, :to, :from);
+  ( :message, :to, :from , :ekeys );

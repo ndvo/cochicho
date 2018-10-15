@@ -53,3 +53,13 @@ function setPassStrengthMeter(){
   meter.value = score;
   out.value = checkPassStrength(score);
 }
+
+function chooseOne(caller, ids){
+  let displays = ['none','block' ];
+  let first = 1;
+  for (let i = 0; i< ids.length; i++){
+    el = document.querySelector(ids[i]);
+    el.style.display = displays[first];
+    first = 0;
+  }
+}

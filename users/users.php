@@ -1,7 +1,6 @@
 <?php
 
 namespace User;
-require_once( 'config/db.php');
 
 require_once('config/db.php');
 
@@ -24,7 +23,7 @@ class User{
 
   static function is_valid_name($name){
     if (preg_match("/[\d\w+@-][\d\w\.+ '@-]+[\d\w+@-]/", $name)){
-      return true;
+      return $name;
     }
     return false;
   }
@@ -67,7 +66,7 @@ class User{
       }
       if (empty($err)){
         $this->name = $uname;
-        $this->create_secret($pwd);
+        $this->create_secret($this->generate_pwd());
         $this->iv = random_bytes(16);
         $ok = $this->create_key_pair();
         if ($ok){
@@ -86,7 +85,7 @@ class User{
       if ($pwd){
         $this->secret = hash('sha256', $pwd);
         $_SESSION['secret'] = $this->secret;
-      }elseif(!empty($_SESSION['secret'])){
+      }elseif(empty($this->secret) and !empty($_SESSION['secret'])){
         $this->secret = $_SESSION['secret'];
       }
   }
@@ -120,10 +119,12 @@ class User{
         $this->name = $u['name'];
         $this->id = $u['id'];
         $this->public_key = $u['pubkey'];
+        $this->encrypted_key = $u['privkey'];
         $this->mail = $u['mail'];
         $this->accepted_terms = $u['terms'];
         $this->create_secret();
         $this->authenticated = true;
+        $this->iv = $u['iv'];
         return True;
       }
     }
@@ -189,9 +190,14 @@ class User{
     $this->db.save_message(); 
   }
 
-  public function reveal_message($message, $ekeys){
-    $key = decrypt_priv_key();
-    $ok = openssl_open($message, $result, $ekeys[$this->id], $key);
+  public function reveal_message($message, $ekeys, $from, $to){
+    $key = $this->decrypt_priv_key();
+    $pos = array_search($this->id , [$from,$to] );
+    if ($pos === False){
+      return False;
+    }
+    $privkey =openssl_get_privatekey($key);
+    $ok = openssl_open($message, $result, $ekeys[$pos], $key);
     if ($ok){
       return $result;
     }else{
@@ -208,7 +214,7 @@ class User{
   public function unauthenticate(){
     $this->destroy_session();
     $this->authenticated = False;
-    $_SESSION['secret'] = "";
+    unset($_SESSION['secret']);
   }
 
 
@@ -253,6 +259,9 @@ class User{
     ]);
     if (openssl_pkey_export ($res, $privkey)){
       $this->encrypt_priv_key($privkey);
+      if ($this->decrypt_priv_key() != $privkey){
+        throw new Error("Error creating key pair encryption");
+      }
       $pub = openssl_pkey_get_details($res);
       $this->public_key = $pub["key"];
       return true;
@@ -266,7 +275,8 @@ class User{
   }
   
   private function decrypt_priv_key(){
-    return openssl_decrypt(base64_decode($this->encrypted_key), $this->method, $this->secret, 0, $this->iv);
+    $decoded = base64_decode($this->encrypted_key);
+    return openssl_decrypt($decoded, $this->method, $this->secret, 0, $this->iv);
   }
 
 }

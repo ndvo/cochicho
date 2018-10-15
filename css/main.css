@@ -105,9 +105,6 @@ button[value="discard"]{
 fieldset.message input, fieldset.message textarea{
   width: 100%;
 }
-textarea{
-  padding: 3ch;
-}
 
 /** Dialogs **/
 .close-button{
@@ -126,6 +123,8 @@ textarea{
   cursor: pointer;
 }
 dialog{
+  box-shadow: 0 0 0 3000px rgba(0,0,0,0.4);
+  border: none;
 }
 
 
@@ -139,3 +138,38 @@ dl.user.data{
 dl.user.data dt{
   font-weight: bold;
 }
+
+
+/* message */
+
+section.message{
+  border: dashed thin silver;
+  background: #fefefe;
+  padding: 3ch;
+}
+
+section.message .envelope {
+    display: flex;
+    justify-content: space-around;
+    margin: 2ch;
+    background: #fafafa;
+    padding: 1ch;
+}
+
+.panel.messages article{
+  border: dashed thin silver;
+  margin: 3ch 0;
+  padding: 1ch;
+  background: #fefefe;
+}
+article .envelope{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.envelope .actions{
+  display: flex;
+}
+.envelope .actions{
+}
+  font-size: .8em;

@@ -66,6 +66,16 @@ class Conn{
     $query->closeCursor();
   }
 
+  public function full_user_by_name($name){
+    $query = file_get_contents('db/user/full_by_name.sql');
+    $query = $this->pdo->prepare($query);
+    $query->bindParam(':name', $name);
+    $query->execute();
+    $result =  $query->fetch();
+    $query->closeCursor();
+    return $result;
+  }
+
   public function full_user_by_id($id){
     $query = file_get_contents('db/user/full_by_id.sql');
     $query = $this->pdo->prepare($query);
@@ -142,6 +152,8 @@ class Conn{
     $query->bindParam(':to', $to);
     $query->bindParam(':message', $message);
     $query->bindParam(':ekeys', $ekeys);
+    $now = time();
+    $query->bindParam(':time', $now);
     $result = $query->execute();
     $query->closeCursor();
     return $result;
