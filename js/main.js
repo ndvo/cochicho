@@ -42,10 +42,10 @@ function checkPassStrength(score) {
 
 function requirements(pass){
     var variations = {
-        nondigit: /\D/.test(pass),
-        aletter: /\w/.test(pass),
-        nletter: /[^A-Za-z]/.test(pass),
-        eightchar: /.{8}/.test(pass),
+        //nondigit: /\D/.test(pass),
+        //aletter: /[A-Za-z]/.test(pass),
+        //nletter: /[^A-Za-z]/.test(pass),
+        //eightchar: /.{8}/.test(pass),
     }
     for (var check in variations) {
       if (variations[check] != true){

@@ -49,8 +49,11 @@ class User{
       if ( !self::is_valid_name($uname) ){
         $err[] = 'The username chosen is invalid.';
       } 
-      if (empty($_POST['pwd-square']) ||  empty($_POST['pwd-circle']) || empty($_POST['pwd-triangle'])){
+      if (empty($this->generate_pwd())){
         $err[] = 'Please, provide the 3 passwords';
+      }
+      if (!$this->password_requirements($this->generate_pwd())){
+        $err[] = 'Please, provide a stronger password';
       }
       $this->mail = $_POST['mail'];
       $umailconfirm = $_POST['mail2'];
@@ -79,6 +82,22 @@ class User{
     }
     $this->err = $err;
     return False;
+  }
+
+  private function password_requirements($p){
+    // 8 chars, one non word and not only digits
+    $requirements = [
+      '/\D/',
+      '/[^A-Za-z]/',
+      '/[A-Za-z]/',
+      '/.{8}/'
+    ];
+    foreach ($requirements as $r){
+      if (!preg_match($r, $p)){
+        return False;
+      }
+    }
+    return True;
   }
 
   private function create_secret($pwd=False){
