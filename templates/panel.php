@@ -14,7 +14,8 @@
   foreach ($data->messages as $m){
     if ($m->to == $data->user->name){
       $received[] = $m;
-    }elseif($m->from == $data->user->name){
+    }
+    if($m->from == $data->user->name){
       $sent[] = $m;
     }
   }
@@ -29,6 +30,7 @@
 
 <section id="received" class="panel messages received">
   <h2>Received Messages</h2>
+
   <?php if (!empty($received)): foreach ($received as $m):  ?>
 
     <article class="message">
@@ -75,8 +77,8 @@
       <p>It seems that none of your friends have sent you a message yet.</p>
       <p>You can <a href="/compose">Compose a message to send</a> or <a href="/invite">invite your friends to join</a></p>
   </article>
-</section>
 <?php endif; ?>
+</section>
 
 <section id="sent" class="panel messages sent" style="display: none">
 
@@ -111,11 +113,10 @@
   <?php  endforeach; else: ?>
   <article>
     <h3>No messages yet...</h3>
-      <p>It seems that none of your friends have sent you a message yet.</p>
+      <p>It seems that haven't send any messages yet.</p>
       <p>You can <a href="/compose">Compose a message to send</a> or <a href="/invite">invite your friends to join</a></p>
   </article>
 <?php endif ; ?>
-
 </section>
 
 
