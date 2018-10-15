@@ -44,20 +44,16 @@
           on: <?php echo date('l jS \of F Y h:i:s A', $m->time) ; ?>
         </div>
         <div class="actions">
-          <form method="post">
+          <form method="post" action="/compose">
             <input type="hidden" name="action" value="reply">
             <input type="hidden" name="msg" value="<?php echo $m->mid; ?>">
-            <button type="submit">Reply</button>
+            <input type="hidden" name="to" value="<?php echo $m->from ;?> ">
+            <button type="submit" name="action" value="reply">Reply</button>
           </form>
           <form method="post">
             <input type="hidden" name="action" value="delete">
             <input type="hidden" name="msg" value="<?php echo $m->mid; ?>">
-            <button type="submit">Delete</button>
-          </form>
-          <form method="post">
-            <input type="hidden" name="action" value="unread">
-            <input type="hidden" name="msg" value="<?php echo $m->mid; ?>">
-            <button type="submit">Mark as unread</button>
+            <button type="submit" name="action" value="delete" title="Deleting: be careful, this action cannot be undone.">Delete</button>
           </form>
         </div>
       </section>

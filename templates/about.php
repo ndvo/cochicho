@@ -131,6 +131,18 @@ is filtered with it's purify method.</p>
 <p>Stored data are not subject to HTML Purifier. The sanitization occurs
 previous to building the HTML.</p>
 
+<h2>Information leakage</h2>
+
+<p>The system avoids using paths or Get queries that may leak information. Many
+websites will display the user page in a path similar to '/user/john',
+revealing the username or user id to an opponent monitoring traffic. Even
+worse, these requests may be used to set the parameter of the destination of a
+message, as in '/send-message/to/john', or simply 'send/john'. These requests
+reveal contacts information and frequency of exchanged messages.</p>
+
+<p>We use a single path, 'compose', to both answers and new messages. The
+contact information, if necessary, is provided through a Post request.</p>
+
 <h2>Database dump</h2>
 
 <p>Database dumping is done with a Shell Script, executed by PHP without any

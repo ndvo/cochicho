@@ -141,8 +141,18 @@ $F_compose = function ($params, &$data, &$template){
   $data->from = $user->name;
   $template->content = 'templates/compose.php';
   $action = empty($_POST['action'])?'':$_POST['action'];
+  $post2data = [
+    'to' => 'to',
+    'title'=>'title',
+    'body'=>'body'
+  ];
+  $_POST['from'] = $user->name;
+  foreach ($post2data as $k=>$v){
+    if (!empty($_POST[$k]) and empty($data->$v)){
+      $data->$v = trim($_POST[$k]);
+    }
+  }
   if ($action == 'send'){
-    $_POST['from'] = $user->name;
     if (!in_array($_POST['to'], $data->ulist)){
       $data->warning = "The user to whom you are trying to send a message is not registered.";
     }else{
