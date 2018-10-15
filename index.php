@@ -51,6 +51,22 @@ $F_front_page = function($params, &$data, &$template){
       $m[] = new Message($encrypted=True, $me);
     }
     $data->messages = $m;
+    $action = empty($_POST['action'])?'':$_POST['action'];
+    if($action == 'delete'){
+      $mid = $_POST['msg']? intval($_POST['msg']): false;
+      if ($mid){
+        $m= $db->retrieve_message($mid);
+        if (!empty($m)){
+          $tobe_deleted = new Message($encrypted=True, $me);
+          $attempt = $tobe_deleted->remove_from_database();
+          if ($attempt==1){
+            $data->warning = "Message $tobe_deleted->title was deleted.<br>It won't be shown in new requests.";
+          }else{
+            $data->warning = "Couldn't remove message.";
+          }
+        }
+      }
+    }
   }
 };
 

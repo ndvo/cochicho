@@ -157,6 +157,15 @@ class Conn{
     return $result;
   }
 
+  public function delete_message($mid){
+    $query = file_get_contents('db/message/delete_message.sql');
+    $query = $this->pdo->prepare($query);
+    $query->bindParam(':mid', $mid);
+    $result = $query->execute();
+    $query->closeCursor();
+    return $result;
+  }
+
   public function retrieve_message($mid){
     $query = file_get_contents('db/message/message.sql');
     $query = $this->pdo->prepare($query);

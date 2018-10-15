@@ -20,8 +20,6 @@
     <textarea name="body" rows="10" cols="95" placeholder="Your message here" ></textarea>
     </label>
   </fieldset>
-  <button type="submit" name="action" value="discard">Discard</button>
-  <button type="submit" name="action" value="save">Save for later</button>
   <button type="submit" name="action" value="send">Send</button>
 
 <datalist id="ulist">

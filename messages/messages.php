@@ -106,6 +106,7 @@ class Message{
       $this->build_from_values($envelope);
     }else{
       //$m = $db->retrieve_message($mid);
+      $this->mid = $envelope['mid'];
       $ok = $this->decrypt_message(
         $envelope['content'],
         $envelope['ekeys'],
@@ -184,7 +185,22 @@ class Message{
       return False;
     }
   }
-
+  
+  public function remove_from_database(){
+    global $user;
+    if ($user->name == $this->to){
+      global $db;
+      $ok = $db->delete_message($this->mid);
+      if ($ok){
+        return 1;
+      }else{
+        return 0;
+      }
+    }else{
+      $this->err = "User does not have permission to delete";
+      return False;
+    }
+  }
 
 }
 
