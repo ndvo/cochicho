@@ -45,10 +45,6 @@ $F_front_page = function($params, &$data, &$template){
     $data->user = $user;
     $data->title = 'Overview';
     $template->content = 'templates/panel.php';
-    if (!empty($_SESSION['message'])){
-      $data->warning = $_SESSION['message'];
-      unset($_SESSION['message']);
-    }
     $messages = $db->retrieve_user_messages($user->id);
     $m = [];
     foreach ($messages as $me){
@@ -120,6 +116,7 @@ $F_register = function($params, &$data, &$template){
     $ok = $user->register();
     if ($ok){
       $data->title = "Thank you for registering, $user->name";
+      $data->content = "Please, log in to exchange messages with your friends.";
       $template->content = 'templates/welcome.php';
     }else{
       $err = "<ul>\n";
@@ -139,15 +136,16 @@ $F_dbdump = function($params, &$data, &$template){
 $F_compose = function ($params, &$data, &$template){
   global $user;
   global $db;
-  if (empty($_POST)){
-    $data->from = $user->name;
-    $usernames = $db->all_usernames();
-    $data->ulist = array_column($usernames, 'name');
-    $template->content = 'templates/compose.php';
-  }else{
-    $action = $_POST['action'];
-    if ($action == 'send'){
-      $_POST['from'] = $user->name;
+  $usernames = $db->all_usernames();
+  $data->ulist = array_column($usernames, 'name');
+  $data->from = $user->name;
+  $template->content = 'templates/compose.php';
+  $action = empty($_POST['action'])?'':$_POST['action'];
+  if ($action == 'send'){
+    $_POST['from'] = $user->name;
+    if (!in_array($_POST['to'], $data->ulist)){
+      $data->warning = "The user to whom you are trying to send a message is not registered.";
+    }else{
       $envelope = Message::envelope_from_post(time()); 
       $m = new Message($encrypted=False, $envelope=$envelope);
       $ok = $m->store_message();
@@ -156,6 +154,8 @@ $F_compose = function ($params, &$data, &$template){
         $template->content = 'templates/message.php';
         header("Location: /panel");
         die();
+      }else{
+        $data->warning = "Something has gone wrong";
       }
     }
   }
@@ -190,6 +190,10 @@ if (!$error){
     $found = preg_match($pattern, $_SERVER['REQUEST_URI'], $params);
     if ($found == 1){
       $function($params, $data, $template);
+      if (!empty($_SESSION['message'])){
+        $data->warning = $_SESSION['message'];
+        unset($_SESSION['message']);
+      }
       break;
     }
   }

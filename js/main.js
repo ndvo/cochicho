@@ -42,10 +42,10 @@ function checkPassStrength(score) {
 
 function requirements(pass){
     var variations = {
-        //nondigit: /\D/.test(pass),
-        //aletter: /[A-Za-z]/.test(pass),
-        //nletter: /[^A-Za-z]/.test(pass),
-        //eightchar: /.{8}/.test(pass),
+        nondigit: /\D/.test(pass),
+        aletter: /[A-Za-z]/.test(pass),
+        nletter: /[^A-Za-z]/.test(pass),
+        eightchar: /.{8}/.test(pass),
     }
     for (var check in variations) {
       if (variations[check] != true){
@@ -63,7 +63,6 @@ function setPassStrengthMeter(){
   let out = document.querySelector('output');
   let test = square.value+circle.value+triangle.value;
   let score = scorePassword(test);
-  console.log([square, circle, triangle, meter, out, score]);
   meter.value = score;
   let ok = requirements(test)
   if (ok){
@@ -75,12 +74,35 @@ function setPassStrengthMeter(){
   }
 }
 
-function chooseOne(caller, ids){
+function chooseOne(caller, ids, competitors){
+  caller.classList.add("active");
+  for (let i=0; i<competitors.length; i++){
+    document.querySelector(competitors[i]).classList.remove("active");
+  }
   let displays = ['none','block' ];
   let first = 1;
   for (let i = 0; i< ids.length; i++){
     el = document.querySelector(ids[i]);
     el.style.display = displays[first];
     first = 0;
+  }
+}
+
+function validateTo(el) {
+  var options = document.getElementById("ulist").options;
+  var result = false;
+  for (var i = 0; i < options.length; i++) {
+    if(el.value == options[i].value) {
+      result = true;
+    }
+  }
+  if (result){
+    el.validity.valid = true;
+    el.setCustomValidity('');
+    document.querySelector('[name="action"][value="send"]').disabled = false;
+  }else{
+    el.validity.valid = false;
+    el.setCustomValidity("This user is not registered.");
+    document.querySelector('[name="action"][value="send"]').disabled = true;
   }
 }

@@ -152,8 +152,6 @@ class Conn{
     $query->bindParam(':to', $to);
     $query->bindParam(':message', $message);
     $query->bindParam(':ekeys', $ekeys);
-    $now = time();
-    $query->bindParam(':time', $now);
     $result = $query->execute();
     $query->closeCursor();
     return $result;

@@ -19,10 +19,12 @@
     }
   }
 ?>
-  
-<section class="actions">
-  <button onclick="chooseOne(this, ['#received','#sent']);" >Received</button>
-  <button onclick="chooseOne(this, ['#sent','#received'])" >Sent</button>
+
+
+<section class="actions section-switch">
+  <button id="received" class="active" onclick="chooseOne(this, ['section#received','section#sent'], ['button#sent']);" >Received</button>
+  <button id="sent" onclick="chooseOne(this, ['section#sent','section#received'], ['button#received'])" >Sent</button>
+  <a href="/compose"><button >New message</button></a>
 </section>
 
 <section id="received" class="panel messages received">
@@ -95,23 +97,6 @@
         </div>
         <div class="datetime">
           on: <?php echo date('l jS \of F Y h:i:s A', $m->time) ; ?>
-        </div>
-        <div class="actions">
-          <form method="post">
-            <input type="hidden" name="action" value="reply">
-            <input type="hidden" name="msg" value="<?php echo $m->mid; ?>">
-            <button type="submit">Reply</button>
-          </form>
-          <form method="post">
-            <input type="hidden" name="action" value="delete">
-            <input type="hidden" name="msg" value="<?php echo $m->mid; ?>">
-            <button type="submit">Delete</button>
-          </form>
-          <form method="post">
-            <input type="hidden" name="action" value="unread">
-            <input type="hidden" name="msg" value="<?php echo $m->mid; ?>">
-            <button type="submit">Mark as unread</button>
-          </form>
         </div>
       </section>
 

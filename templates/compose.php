@@ -6,7 +6,7 @@
     From: <input disabled type="text" placeholder="From" value ="<?php echo $data->from ;?>" >
   </label>
   <label to="to">
-    To: <input type="text" name="to" placeholder="Choose a recipient for this message" value="<?php echo empty($data->to)?"":$data->to ;?>" list="ulist" >
+    To: <input type="text" name="to" onchange="validateTo(this)" placeholder="Choose a recipient for this message" value="<?php echo empty($data->to)?"":$data->to ;?>" list="ulist" >
   </label>
   </fieldset>
   <fieldset class="message">

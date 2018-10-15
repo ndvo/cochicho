@@ -101,7 +101,7 @@ button:disabled:hover{
   cursor: not-allowed;
 }
 button:disabled:hover:after{
-  content: "  --  Please, make your password stronger ";
+  content: "  --  Please, review the form. There is one or more invalid fields.";
 }
 
 button:hover{
@@ -176,6 +176,15 @@ article .envelope{
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+/* Panel */
+
+.section-switch button{
+}
+.section-switch button.active{
+  background: #fefefe; 
+  box-shadow: -1px -1px 0px 0px silver;
 }
 .envelope .actions{
   display: flex;
