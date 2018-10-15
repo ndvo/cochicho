@@ -94,6 +94,16 @@ button{
   padding: 1ch 2ch;
   font-weight: bold;
 }
+button:disabled{
+  background: #fafafa;
+}
+button:disabled:hover{
+  cursor: not-allowed;
+}
+button:disabled:hover:after{
+  content: "  --  Please, make your password stronger ";
+}
+
 button:hover{
   box-shadow: 3px 3px 3px 3px silver;
   cursor: pointer;

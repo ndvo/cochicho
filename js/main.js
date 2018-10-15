@@ -16,7 +16,6 @@ function scorePassword(pass) {
     for (var check in variations) {
         variationCount += (variations[check] == true) ? 1 : 0;
     }
-    console.log(variationCount);
     score += score*(variationCount-1) ;
 
     return parseInt(score);
@@ -41,6 +40,21 @@ function checkPassStrength(score) {
     return "";
 }
 
+function requirements(pass){
+    var variations = {
+        nondigit: /\D/.test(pass),
+        aletter: /\w/.test(pass),
+        nletter: /[^A-Za-z]/.test(pass),
+        eightchar: /.{8}/.test(pass),
+    }
+    for (var check in variations) {
+      if (variations[check] != true){
+        return false;
+      }
+    }
+    return true;
+}
+
 function setPassStrengthMeter(){
   let square = document.querySelector('input[name="pwd-square"]');
   let circle = document.querySelector('input[name="pwd-circle"]');
@@ -51,7 +65,14 @@ function setPassStrengthMeter(){
   let score = scorePassword(test);
   console.log([square, circle, triangle, meter, out, score]);
   meter.value = score;
-  out.value = checkPassStrength(score);
+  let ok = requirements(test)
+  if (ok){
+    out.value = checkPassStrength(score);
+    document.querySelector("button#register").disabled=false;
+  }else{
+    out.value = "too weak";
+    document.querySelector("button#register").disabled=true;
+  }
 }
 
 function chooseOne(caller, ids){

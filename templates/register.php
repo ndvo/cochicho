@@ -44,6 +44,7 @@
     <legend>*** Passwords</legend>
     <p>Three passwords?!? Yup. Much easier than special chars. Choose three
     passwords that will keep your secret messages secret.</p>
+    <p>To make your password safe, at least one of them should have <strong>a character that is not a letter</strong>. Do not use only numbers.</p>
     <label for="pwd-square">■ Password:
       <input onchange="setPassStrengthMeter()" type="password" name="pwd-square" required >
     </label>
@@ -86,6 +87,6 @@
         <input type="checkbox" name="terms" > I fully understand and agree.
       </label>
     </fieldset>
-    <button type="submit" value="submit">Submit</button>
+    <button id="register" type="submit" value="submit">Submit</button>
   </form>
 </main>
