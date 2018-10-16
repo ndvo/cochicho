@@ -121,6 +121,16 @@ class Conn{
     return $result;
   }
 
+  public function name_by_mail($mail){
+    $query = file_get_contents('db/user/name_by_mail.sql');
+    $query = $this->pdo->prepare($query);
+    $query->bindParam(':mail', $mail);
+    $query->execute();
+    $result =  $query->fetch();
+    $query->closeCursor();
+    return $result;
+  }
+
   public function mail_by_name($name){
     $query = file_get_contents('db/user/mail_by_name.sql');
     $query = $this->pdo->prepare($query);

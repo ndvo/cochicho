@@ -69,6 +69,10 @@ class User{
       if (!filter_var($this->mail, FILTER_VALIDATE_EMAIL)){
         $err[] = 'There is something wrong with the provided email.';
       }
+      $exists = $db->name_by_mail($this->mail);
+      if (!empty($exists)){
+        $err[] = "Sorry, we couldn't create the account. Please, use a different email address";
+      }
       if (empty($_POST['terms'])){
         $err[] = 'The use of this service is conditioned to the acceptance of the Terms of Use.';
       }
