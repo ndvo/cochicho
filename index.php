@@ -125,10 +125,9 @@ $F_login = function($params, &$data, &$template){
 };
 
 $F_register = function($params, &$data, &$template){
-  if (empty($_POST)){
-    $template->content = 'templates/register.php';
-    $data->title = 'Registration';
-  }else{
+  $template->content = 'templates/register.php';
+  $data->title = 'Registration';
+  if (!empty($_POST)){
     global $user;
     $ok = $user->register();
     if ($ok){
@@ -193,6 +192,7 @@ $F_logout = function ($params, &$data, &$template){
   global $user;
   $user->unauthenticate();
   $template->content = "templates/logout.php";
+  $data->warning = "You were successfully logged out";
 };
 
 $F_about = function ($params, &$data, &$template){

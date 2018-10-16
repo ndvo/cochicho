@@ -62,8 +62,9 @@ class Conn{
     $query->bindParam(':privkey', $privkey);
     $query->bindParam(':iv', $iv);
     $query->bindParam(':terms', $terms);
-    $query->execute();
+    $result = $query->execute();
     $query->closeCursor();
+    return $result;
   }
 
   public function full_user_by_name($name){

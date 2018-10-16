@@ -55,6 +55,11 @@ class User{
       if (!$this->password_requirements($this->generate_pwd())){
         $err[] = 'Please, provide a stronger password';
       }
+      global $db;
+      $exists = $db->mail_by_name($uname);
+      if (!empty($exists)){
+        $err[]='Sorry. This username was already taken';
+      }
       $this->mail = $_POST['mail'];
       $umailconfirm = $_POST['mail2'];
       $pwd = password_hash($this->generate_pwd(), PASSWORD_DEFAULT);
@@ -210,6 +215,11 @@ class User{
   }
 
   public function reveal_message($message, $ekeys, $from, $to){
+    if (empty($this->secret) or empty($this->encrypted_key)){
+      $this->unauthenticate();
+      global $data;
+      $data->warning = "User was unauthenticated";
+    }
     $key = $this->decrypt_priv_key();
     $pos = array_search($this->id , [$from,$to] );
     if ($pos === False){
