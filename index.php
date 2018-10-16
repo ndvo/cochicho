@@ -266,7 +266,7 @@ if (!$error){
     '/^\/logout\/?$/'=> $F_logout,
     '/^\/about\/?$/'=> $F_about,
     '/^\/dbdump\/?$/'=> $F_dbdump,
-    '/^\/admin\/install\/?$/'=> $F_install,
+    //'/^\/admin\/install\/?$/'=> $F_install,
     '/^\/compose\/?$/'=>$F_compose,
     '/^\/(login|profile)\/?$/'=> $F_login,
     '/^\/register\/?$/'=> $F_register,
