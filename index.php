@@ -1,23 +1,21 @@
 <?php
-
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
+$dir = sys_get_temp_dir();
+session_save_path($dir);
 require_once('config/settings.php');
-require_once('config/db.php');
-require_once('users/users.php');
-require_once('messages/messages.php');
-require_once('page.php');
-
-
 session_start(
   [
     'cookie_httponly'=>true,
     'cookie_domain'=>DOMAIN,
   ]
 );
-        
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+require_once('config/db.php');
+require_once('users/users.php');
+require_once('messages/messages.php');
+require_once('page.php');
 
 use \DB\Conn as D;
 use \User\User as User;
@@ -320,6 +318,12 @@ if (!$error){
   <footer>
     <?php echo \Page\template_render($template->footer, $data); ?>
   </footer>
+<?php print_r($_SESSION);
+
+print_r(session_save_path ());
+?>
+
+
 <script src="js/main.js">
 </script>
 </body>

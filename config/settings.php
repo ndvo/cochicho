@@ -1,4 +1,4 @@
 <?php
 
 
-define('DOMAIN', 'security');
+define('DOMAIN', 'security.ndvo.geekgalaxy.com');
