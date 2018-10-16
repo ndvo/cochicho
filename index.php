@@ -240,7 +240,7 @@ $F_password_reset = function ($params, &$data, &$template){
             'Reply-To: ndvo@security.ndvo.geekgalaxy.com' . "\r\n" .
             'X-Mailer: PHP/' . phpversion();
         $ok =mail($to, $subject, $message, $headers);
-        $data->warning = "A recovering key was sent to your email.";
+        $data->warning = "A recovering key was sent to your email. $secret";
       }
     }else{
       $secret = trim($_POST['secret']);
