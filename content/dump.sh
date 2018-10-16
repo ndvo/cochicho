@@ -24,8 +24,5 @@ createtable recovery
 cat $temp |tidy > "$BASEDIR"/dbdump/dump.html
 rm $temp
 
-cp   "$BASEDIR"/../content.db  "$BASEDIR"/dbdump/content.db
-
-       
-
+cp   "$BASEDIR"/content.db  "$BASEDIR"/dbdump/content.db
 

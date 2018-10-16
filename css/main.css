@@ -48,6 +48,12 @@ header{
   display: inline-block;
   vertical-align: middle;
 }
+.logout a{
+  color: red;
+}
+.profile{
+  text-align: right;
+}
 
 /** Menu **/
 nav {
