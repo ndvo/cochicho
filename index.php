@@ -223,7 +223,6 @@ $F_password_reset = function ($params, &$data, &$template){
     $alleged = trim($_POST['username']);
     $data->account = True;
     $mail = $db->mail_by_name($alleged)['mail'];
-    $data->warning = $mail;
     if (empty($_POST['secret'])){
       if (!empty($mail)){
         $secret = trim(base64_encode(random_bytes(16)));
@@ -241,6 +240,7 @@ $F_password_reset = function ($params, &$data, &$template){
             'Reply-To: ndvo@security.ndvo.geekgalaxy.com' . "\r\n" .
             'X-Mailer: PHP/' . phpversion();
         $ok =mail($to, $subject, $message, $headers);
+        $data->warning = "A recovering key was sent to your email.";
       }
     }else{
       $secret = trim($_POST['secret']);
