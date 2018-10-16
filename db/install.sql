@@ -7,7 +7,8 @@ CREATE TABLE IF NOT EXISTS users (
   privkey TEXT UNIQUE,
   iv TEXT,
   terms BOOLEAN 
-);
+  )
+;
 
 CREATE TABLE IF NOT EXISTS messages(
   id INTEGER PRIMARY KEY,
@@ -15,10 +16,19 @@ CREATE TABLE IF NOT EXISTS messages(
   recipient INTEGER NOT NULL references users(id),
   sender    INTEGER NOT NULL references users(id),
   ekeys TEXT
-);
+  )
+;
 
 CREATE TABLE IF NOT EXISTS sessions(
     uid INTEGER UNIQUE,
     cookie BLOB NOT NULL 
     )
+;
+
+CREATE TABLE IF NOT EXISTS recovery(
+  user TEXT NOT NULL references users(name),
+  secret TEXT NOT NULL,
+  generated INTEGER NOT NULL,
+  used BOOLEAN
+  )
 ;

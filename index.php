@@ -4,6 +4,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+require_once('config/settings.php');
 require_once('config/db.php');
 require_once('users/users.php');
 require_once('messages/messages.php');
@@ -13,7 +14,7 @@ require_once('page.php');
 session_start(
   [
     'cookie_httponly'=>true,
-    'cookie_domain'=>'security',
+    'cookie_domain'=>DOMAIN,
   ]
 );
         
@@ -197,6 +198,30 @@ $F_about = function ($params, &$data, &$template){
   $template->content = "templates/about.php";
 };
 
+$F_password_reset = function ($params, &$data, &$template){
+  global $db;
+  if (!empty($_POST['username'])){
+    $alleged = trim($_POST['username']);
+    $data->account = True;
+    $mail = $db->mail_by_name($alleged)['mail'];
+    if (!empty($mail)){
+      $secret = base64_encode(random_bytes(16));
+      $db->insert_recovery($alleged, $secret);
+      $to = $mail;
+      $subject = 'Account recovery';
+      $message = "Hi
+        Here is your secret key to recover your account at ".DOMAIN."
+        id you ask for a pasword recovery?
+
+        Messaging Privately security team.";
+      print_r([$to, $subject, $message]);
+      $ok =mail($to, $subject, $message);
+      print_r($ok);
+    }
+  }
+  $template->content = "templates/passwordreset.php";
+};
+
 
 if (!$error){
   $params = [];
@@ -208,7 +233,8 @@ if (!$error){
     '/^\/compose\/?$/'=>$F_compose,
     '/^\/(login|profile)\/?$/'=> $F_login,
     '/^\/register\/?$/'=> $F_register,
-    '/^(\/panel)?\/?$/'=> $F_front_page,
+    '/^(\/panel|\/index\.html)?\/?$/'=> $F_front_page,
+    '/^\/password-reset\/?$/'=> $F_password_reset,
     '/.*/' => $F_not_found,
   ];
   $data->user = $user;

@@ -35,6 +35,7 @@
           <label for="pwd-circle">● Password:
             <input type="password" name="pwd-circle" required>
           </label>
+        <a href="/password-reset">Did you forget your password?</a>
       </fieldset>
       <input type="submit" value="submit">
   </form>
@@ -43,9 +44,11 @@
     <h4>Help</h4>
     <details>
       <summary>Did you forget your password?</summary>
+      <p>You may <a href="/password-reset">ask for a password reset link</a>. You will receive an email with a confirmation link. You won't be able to read the messages that were encrypted using your old password.</p>
     </details>
     <details>
       <summary>Three passwords?</summary>
+      <p>It is simply a way to help you memorize a complex password by breaking it into thre simple ones.</p>
     </details>
   </section>
 

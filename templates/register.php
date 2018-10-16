@@ -25,10 +25,10 @@
       <p>Please, provide an email. It will be used to reach you if you loose your
       password and to notify about new messages.</p>
       <label for="mail" >What is your e-mail?
-        <input id="username" name="mail" type="email" placeholder="Your username" required >
+        <input id="username" name="mail" type="email" placeholder="Your email" required >
       </label>
       <label for="mail2" >Confirm your email:
-        <input type="email" name="mail2" placeholder="Please, type you email again to be sure is is right." title="Your email is the only way you can recover your messages if you loose your password. It is important to make sure it is right." required >
+        <input type="email" name="mail2" placeholder="Please, confirm your email" title="Your email is the only way you can recover your messages if you loose your password. It is important to make sure it is right." required >
       </label>
       <details class="help"><summary>Help:</summary>
        <ul>

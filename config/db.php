@@ -106,6 +106,16 @@ class Conn{
     return $result;
   }
 
+  public function mail_by_name($name){
+    $query = file_get_contents('db/user/mail_by_name.sql');
+    $query = $this->pdo->prepare($query);
+    $query->bindParam(':name', $name);
+    $query->execute();
+    $result =  $query->fetch();
+    $query->closeCursor();
+    return $result;
+  }
+
   public function all_usernames(){
     $query = file_get_contents('db/user/all_names.sql');
     $query = $this->pdo->prepare($query);
@@ -186,4 +196,18 @@ class Conn{
     return $result;
   }
 
+  public function insert_recovery($user, $secret){
+    $generated = time();
+    $used = 0;
+    $query = file_get_contents('db/user/insert_recovery.sql');
+    $query = $this->pdo->prepare($query);
+    $query->bindParam(':user', $user);
+    $query->bindParam(':secret', $secret);
+    $query->bindParam(':generated', $generated);
+    $query->bindParam(':used', $used);
+    $result = $query->execute();
+    $query->closeCursor();
+    return $result;
+  }
 }
+

@@ -126,7 +126,7 @@ class User{
 
   private function am_i_in(){
     if (empty($_COOKIE['wai'])){
-      setcookie('wai', random_bytes(256), time()+1*60*60*24, '/', 'security', $secure=false, $httponly=true  );
+      setcookie('wai', random_bytes(256), time()+1*60*60*24, '/',DOMAIN, $secure=false, $httponly=true  );
       return False;
     }else{
       $uid = $this->db->get_session($_COOKIE['wai']);
