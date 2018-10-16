@@ -1,3 +1,5 @@
 *.tar.gz
 *.swp
 content/content.db
+content/dbdump/*
+*.swo
