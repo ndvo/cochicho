@@ -219,8 +219,7 @@ $F_password_reset = function ($params, &$data, &$template){
       $headers = 'From: ndvo@security.ndvo.geekgalaxy.com' . "\r\n" .
           'Reply-To: ndvo@security.ndvo.geekgalaxy.com' . "\r\n" .
           'X-Mailer: PHP/' . phpversion();
-      print_r([$to, $subject, $message]);
-      $ok =mail($to, $subject, $message);
+      $ok =mail($to, $subject, $message, $headers);
       print_r($ok);
     }
   }
