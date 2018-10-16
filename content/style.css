@@ -1,0 +1,7 @@
+
+table td, table, table th{
+  border:solid thin silver;
+  border-collapse: collapse;
+  word-wrap:break-word;
+  word-wrap:break-all;
+}

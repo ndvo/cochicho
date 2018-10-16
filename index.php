@@ -125,10 +125,9 @@ $F_login = function($params, &$data, &$template){
 };
 
 $F_register = function($params, &$data, &$template){
-  if (empty($_POST)){
-    $template->content = 'templates/register.php';
-    $data->title = 'Registration';
-  }else{
+  $template->content = 'templates/register.php';
+  $data->title = 'Registration';
+  if (!empty($_POST)){
     global $user;
     $ok = $user->register();
     if ($ok){
@@ -147,6 +146,7 @@ $F_register = function($params, &$data, &$template){
 };
 
 $F_dbdump = function($params, &$data, &$template){
+  exec(dirname(__FILE__).'/content/dump.sh');
   $template->content = 'templates/dbdump.php';
 };
 
@@ -192,6 +192,7 @@ $F_logout = function ($params, &$data, &$template){
   global $user;
   $user->unauthenticate();
   $template->content = "templates/logout.php";
+  $data->warning = "You were successfully logged out";
 };
 
 $F_about = function ($params, &$data, &$template){
@@ -204,23 +205,32 @@ $F_password_reset = function ($params, &$data, &$template){
     $alleged = trim($_POST['username']);
     $data->account = True;
     $mail = $db->mail_by_name($alleged)['mail'];
-    if (!empty($mail)){
-      $secret = base64_encode(random_bytes(16));
-      $db->insert_recovery($alleged, $secret);
-      $to = $mail;
-      $subject = 'Account recovery';
-      $message = "Hi
-        Here is your secret key to recover your account at ".DOMAIN."
-        Did you ask for a pasword recovery?
+    if (empty($_POST['secret'])){
+      if (!empty($mail)){
+        $secret = trim(base64_encode(random_bytes(16)));
+        $db->insert_recovery($alleged, $secret);
+        $to = $mail;
+        $subject = 'Account recovery';
+        $message = "Hi
+          Here is your secret key to recover your account at ".DOMAIN."
+          Did you ask for a pasword recovery?
 
-        Secret: $secret
+          Secret: $secret
 
-        Messaging Privately security team.";
-      $headers = 'From: ndvo@security.ndvo.geekgalaxy.com' . "\r\n" .
-          'Reply-To: ndvo@security.ndvo.geekgalaxy.com' . "\r\n" .
-          'X-Mailer: PHP/' . phpversion();
-      $ok =mail($to, $subject, $message, $headers);
-      print_r($ok);
+          Messaging Privately security team.";
+        $headers = 'From: ndvo@security.ndvo.geekgalaxy.com' . "\r\n" .
+            'Reply-To: ndvo@security.ndvo.geekgalaxy.com' . "\r\n" .
+            'X-Mailer: PHP/' . phpversion();
+        $ok =mail($to, $subject, $message, $headers);
+      }
+    }else{
+      $secret = trim($_POST['secret']);
+      $ok = $db->use_secret($alleged, $secret);
+      if ($ok){
+        #TODO: go to change password form
+      }else{
+        $data->warning = "Sorry, you were not able to provide the secret.";
+      }
     }
   }
   $template->content = "templates/passwordreset.php";
