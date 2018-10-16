@@ -112,7 +112,6 @@ class User{
              $this->name, $pwd, $this->public_key, $this->encrypted_key, $this->iv
           );
           if ($recovered){
-            unset($_SESSION);
             $this->unauthenticate();
             return True;
           }else{
@@ -279,9 +278,7 @@ class User{
   public function unauthenticate(){
     $this->destroy_session();
     $this->authenticated = False;
-    if (!empty($_SESSION['secret'])){
-      unset($_SESSION['secret']);
-    }
+    unset($_SESSION);
   }
 
 
