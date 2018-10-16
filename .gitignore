@@ -2,3 +2,4 @@
 *.swp
 content/content.db
 content/dbdump/*
+*.swo
