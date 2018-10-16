@@ -318,12 +318,6 @@ if (!$error){
   <footer>
     <?php echo \Page\template_render($template->footer, $data); ?>
   </footer>
-<?php print_r($_SESSION);
-
-print_r(session_save_path ());
-?>
-
-
 <script src="js/main.js">
 </script>
 </body>
