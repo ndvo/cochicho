@@ -3,3 +3,4 @@
 content/content.db
 content/dbdump/*
 *.swo
+config/settings.php

@@ -13,8 +13,8 @@
       </details>
       <details>
         <summary>Recovering password</summary>
-        <p>If you loose your password, you can create a new one (three new ones!) from an email we send. <strong>However</strong>, we cannot recover your messages, since they are encrypted with your password. <strong>Fortunately</strong> there is a way to recover your messages: we may ask the sender to resend them. We do this automatically. If you change your password, the senders of your messages will be invited to use their passwords to decrypt the messages and send them again.</p>
-        <p>As you can see, if you loose your password you will need to count on your friends to retrieve your messages for you. This is important because we simply cannot recover them. That's why we're safe.</p>
+        <p>If you loose your password, you can create a new one (three new ones!) from an email we send. <strong>However</strong>, we cannot recover your messages, since they are encrypted with your password.</p>
+        <p style = "color:gray">We plan  to provide there is a way to recover your messages: we will may ask the sender to resend them. We will do this automatically, but it is not set yet. If you change your password, the senders of your messages will be invited to use their passwords to decrypt the messages and send them again.</p>
       </details>
       <details>
         <summary>Encrypted messages</summary>
