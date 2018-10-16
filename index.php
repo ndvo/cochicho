@@ -211,9 +211,14 @@ $F_password_reset = function ($params, &$data, &$template){
       $subject = 'Account recovery';
       $message = "Hi
         Here is your secret key to recover your account at ".DOMAIN."
-        id you ask for a pasword recovery?
+        Did you ask for a pasword recovery?
+
+        Secret: $secret
 
         Messaging Privately security team.";
+      $headers = 'From: ndvo@security.ndvo.geekgalaxy.com' . "\r\n" .
+          'Reply-To: ndvo@security.ndvo.geekgalaxy.com' . "\r\n" .
+          'X-Mailer: PHP/' . phpversion();
       print_r([$to, $subject, $message]);
       $ok =mail($to, $subject, $message);
       print_r($ok);
