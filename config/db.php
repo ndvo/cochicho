@@ -209,5 +209,17 @@ class Conn{
     $query->closeCursor();
     return $result;
   }
+
+  public function use_secret($user, $secret){
+    $expiry = time()-1*60*60*2;
+    $query = file_get_contents('db/use_secret.sql');
+    $query = $this->pdo->prepare($query);
+    $query->bindParam(':user', $user);
+    $query->bindParam(':secret', $secret);
+    $query->bindParam(':expiry', $expiry);
+    $result = $query->execute();
+    $query->closeCursor();
+    return $result;
+  }
 }
 

@@ -20,7 +20,20 @@
 
 <h2>We've sent recovery secret</h2>
 
-<p>If the provided account was registered, we have sent an email to the registered address with a recovery secret valid for 24 hours.</p>
-<p>Please, check your email.</p>
+<p>If the provided account was registered, we have sent an email to the registered address with a <strong>recovery secret key valid for 2 hours.</strong></p>
+<p>Please, check your email and fill the form bellow</p>
+
+<section class="reset-password">
+    <form method="post" >
+      <fieldset id="password">
+      <legend>Password reset</legend>
+      <label for="username" >Username: </label>
+      <input type="text" name="username" placeholder="Your username" >
+      <label for="secret" >Secret key: </label>
+      <input type="text" name="secret" placeholder="The secret key you received in your email" >
+      <button type="submit" value="submit">Submit</button>
+      </fieldset>
+  </form>
+  </section>
 
 <?php endif; ?>
