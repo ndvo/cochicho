@@ -127,9 +127,22 @@ $F_login = function($params, &$data, &$template){
 $F_register = function($params, &$data, &$template){
   $template->content = 'templates/register.php';
   $data->title = 'Registration';
+  if (!empty($_POST['action']) and $_POST['action'] == 'cancel'){
+    $_SESSION = ['message'=>'Registration was canceled '];
+    header("Location: /panel");
+    die();
+  }
+  $action = 'register';
+  if (!empty($_SESSION['action']) and $_SESSION['action'] == 'password_change'){
+    $action = 'recover';
+    $data->title = "Password recovery";
+    if (!empty($_SESSION['uname'])){
+      $data->recovering_user = trim($_SESSION['uname']);
+    }
+  }
   if (!empty($_POST)){
     global $user;
-    $ok = $user->register();
+    $ok = $user->$action();
     if ($ok){
       $data->title = "Thank you for registering, $user->name";
       $data->content = "Please, log in to exchange messages with your friends.";
@@ -200,11 +213,17 @@ $F_about = function ($params, &$data, &$template){
 };
 
 $F_password_reset = function ($params, &$data, &$template){
+  if (!empty($_POST['action']) and $_POST['action'] == 'cancel'){
+    $_SESSION = ['message'=>'Password recovery was canceled.'];
+    header("Location: /panel");
+    die();
+  }
   global $db;
   if (!empty($_POST['username'])){
     $alleged = trim($_POST['username']);
     $data->account = True;
     $mail = $db->mail_by_name($alleged)['mail'];
+    $data->warning = $mail;
     if (empty($_POST['secret'])){
       if (!empty($mail)){
         $secret = trim(base64_encode(random_bytes(16)));
@@ -227,11 +246,17 @@ $F_password_reset = function ($params, &$data, &$template){
       $secret = trim($_POST['secret']);
       $ok = $db->use_secret($alleged, $secret);
       if ($ok){
-        #TODO: go to change password form
+        $_SESSION['action'] = 'password_change';
+        $_SESSION['uname'] = $alleged;
+        $_SESSION['message'] = 'Secret key successfully verified';
+        header("Location: /register");
+        die();
       }else{
         $data->warning = "Sorry, you were not able to provide the secret.";
       }
     }
+  }else{
+    $data->warning = "Upon password change we will not be able to recover your messages.";
   }
   $template->content = "templates/passwordreset.php";
 };

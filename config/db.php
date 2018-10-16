@@ -67,6 +67,20 @@ class Conn{
     return $result;
   }
 
+  public function recover_user( $name, $password, $pubkey, $privkey, $iv ){
+    $query = file_get_contents('db/user/recover_user.sql');
+    $query = $this->pdo->prepare($query);
+    $query->bindParam(':name', $name);
+    $query->bindParam(':password', $password);
+    $query->bindParam(':pubkey', $pubkey);
+    $query->bindParam(':privkey', $privkey);
+    $query->bindParam(':iv', $iv);
+    $result = $query->execute();
+    $query->closeCursor();
+    return $result;
+  }
+
+
   public function full_user_by_name($name){
     $query = file_get_contents('db/user/full_by_name.sql');
     $query = $this->pdo->prepare($query);

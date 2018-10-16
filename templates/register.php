@@ -8,8 +8,9 @@
       <legend>User name</legend>
       <p>A unique name to identify you in our messaging system.</p>
       <label for="username" >User name:
-        <input type="text" name="username" title="Please, provide a username with at least 3 characters. " placeholder="Your username" pattern="[\d\w+@-][\d\w\.+ '@-]+[\d\w+@-]" required >
+        <input type="text" name="username" title="Please, provide a username with at least 3 characters. " placeholder="Your username" pattern="[\d\w+@-][\d\w\.+ '@-]+[\d\w+@-]" required <?php if (!empty($data->recovering_user)){ echo 'value="'.$data->recovering_user.'" disabled' ;} ?> >
       </label>
+      <?php if (empty($data->recovering_user)): ?>
       <details class="help"><summary>Help:</summary>
        <ul>
          <li>You may use any letter, number, apostrophes, space and the symbols "@", "+" and "-" in your username. <span class="example">John D'antagna, peter75 and Mary-Anne are valid usernames.</span></li>
@@ -18,8 +19,10 @@
          <li>Your username may be shown to others.  <span class="example">Do not use any sensitive information as part of your username</span></li>
        </ul>
       </details>
+    <?php  endif; ?>
     </fieldset>
 
+    <?php if (empty($data->recovering_user)) : ?>
     <fieldset id="email">
       <legend>🖃 e-mail</legend>
       <p>Please, provide an email. It will be used to reach you if you loose your
@@ -39,6 +42,8 @@
        </ul>
       </details>
     </fieldset>
+
+    <?php endif; ?>
     
     <fieldset id="password">
     <legend>*** Passwords</legend>
@@ -72,6 +77,7 @@
       </details>
     </fieldset>
 
+    <?php if (empty($data->recovering_user)) : ?>
     <fieldset>
       <legend>Termos of Use</legend>
       <label for="terms" >
@@ -87,6 +93,12 @@
         <input type="checkbox" name="terms" > I fully understand and agree.
       </label>
     </fieldset>
-    <button id="register" type="submit" value="submit">Submit</button>
+    <?php endif; ?>
+
+    <?php if (!empty($data->recovering_user)) : ?>
+    <button name="action" id="cancel" type="submit" value="cancel" formnovalidate>Cancel</button>
+    <?php endif; ?>
+    <button name="action" id="register" type="submit" value="submit">Submit</button>
   </form>
+
 </main>

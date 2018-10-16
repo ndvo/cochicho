@@ -113,7 +113,7 @@
   <?php  endforeach; else: ?>
   <article>
     <h3>No messages yet...</h3>
-      <p>It seems that haven't send any messages yet.</p>
+      <p>It seems that you haven't send any messages yet.</p>
       <p>You can <a href="/compose">Compose a message to send</a> or <a href="/invite">invite your friends to join</a></p>
   </article>
 <?php endif ; ?>

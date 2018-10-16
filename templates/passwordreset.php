@@ -11,7 +11,7 @@
       <fieldset id="password">
       <legend>Password reset</legend>
       <label for="username" >Username: </label>
-      <input type="text" name="username" placeholder="Your username" >
+      <input type="text" name="username" placeholder="Your username" required>
       <input type="submit" value="submit">
       </fieldset>
   </form>
@@ -28,9 +28,9 @@
       <fieldset id="password">
       <legend>Password reset</legend>
       <label for="username" >Username: </label>
-      <input type="text" name="username" placeholder="Your username" >
+      <input type="text" name="username" placeholder="Your username" required>
       <label for="secret" >Secret key: </label>
-      <input type="text" name="secret" placeholder="The secret key you received in your email" >
+      <input type="text" name="secret" placeholder="The secret key you received in your email" required >
       <button type="submit" value="submit">Submit</button>
       </fieldset>
   </form>

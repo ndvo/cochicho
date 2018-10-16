@@ -89,6 +89,42 @@ class User{
     return False;
   }
 
+  public function recover(){
+    $err = [];
+    if (!empty($_POST)){
+      $uname = $_SESSION['uname'];
+      if (empty($this->generate_pwd())){
+        $err[] = 'Please, provide the 3 passwords';
+      }
+      if (!$this->password_requirements($this->generate_pwd())){
+        $err[] = 'Please, provide a stronger password';
+      }
+      global $db;
+      $this->mail = $db->mail_by_name($uname)['mail'];
+      $pwd = password_hash($this->generate_pwd(), PASSWORD_DEFAULT);
+      if (empty($err)){
+        $this->name = $uname;
+        $this->create_secret($this->generate_pwd());
+        $this->iv = random_bytes(16);
+        $ok = $this->create_key_pair();
+        if ($ok){
+          $recovered = $this->db->recover_user(
+             $this->name, $pwd, $this->public_key, $this->encrypted_key, $this->iv
+          );
+          if ($recovered){
+            unset($_SESSION);
+            $this->unauthenticate();
+            return True;
+          }else{
+            return False;
+          }
+        }
+      }
+    }
+    $this->err = $err;
+    return False;
+  }
+
   private function password_requirements($p){
     // 8 chars, one non word and not only digits
     $requirements = [
@@ -243,7 +279,9 @@ class User{
   public function unauthenticate(){
     $this->destroy_session();
     $this->authenticated = False;
-    unset($_SESSION['secret']);
+    if (!empty($_SESSION['secret'])){
+      unset($_SESSION['secret']);
+    }
   }
 
 
