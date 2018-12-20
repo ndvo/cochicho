@@ -21,6 +21,11 @@ use \DB\Conn as D;
 use \User\User as User;
 use \Message\Message as Message;
 
+/**
+ * Constants
+ **/
+define("ACTION", "action");
+
 $db = D::get();
 $data = new stdClass();
 $error = false;
@@ -50,19 +55,16 @@ $F_front_page = function($params, &$data, &$template){
       $m[] = new Message($encrypted=True, $me);
     }
     $data->messages = $m;
-    $action = empty($_POST['action'])?'':$_POST['action'];
-    if($action == 'delete'){
-      $mid = $_POST['msg']? intval($_POST['msg']): false;
+    if($_POST[ACTION]??False){
+      $mid = intval($_POST['msg']??0);
       if ($mid){
         $m= $db->retrieve_message($mid);
         if (!empty($m)){
           $tobe_deleted = new Message($encrypted=True, $me);
           $attempt = $tobe_deleted->remove_from_database();
-          if ($attempt==1){
-            $data->warning = "Message $tobe_deleted->title was deleted.<br>It won't be shown in new requests.";
-          }else{
-            $data->warning = "Couldn't remove message.";
-          }
+					$data->warning = $attempt!=1 ? 
+						"Couldn't remove message." :
+						"Message $tobe_deleted->title was deleted.<br>It won't be shown in new requests.";
         }
       }
     }
@@ -125,13 +127,13 @@ $F_login = function($params, &$data, &$template){
 $F_register = function($params, &$data, &$template){
   $template->content = 'templates/register.php';
   $data->title = 'Registration';
-  if (!empty($_POST['action']) and $_POST['action'] == 'cancel'){
+  if (!empty($_POST[ACTION]) and $_POST[ACTION] == 'cancel'){
     $_SESSION = ['message'=>'Registration was canceled '];
     header("Location: /panel");
     die();
   }
   $action = 'register';
-  if (!empty($_SESSION['action']) and $_SESSION['action'] == 'password_change'){
+  if (!empty($_SESSION[ACTION]) and $_SESSION[ACTION] == 'password_change'){
     $action = 'recover';
     $data->title = "Password recovery";
     if (!empty($_SESSION['uname'])){
@@ -168,7 +170,7 @@ $F_compose = function ($params, &$data, &$template){
   $data->ulist = array_column($usernames, 'name');
   $data->from = $user->name;
   $template->content = 'templates/compose.php';
-  $action = empty($_POST['action'])?'':$_POST['action'];
+  $action = $_POST[ACTION]??'';
   $post2data = [
     'to' => 'to',
     'title'=>'title',
@@ -211,7 +213,7 @@ $F_about = function ($params, &$data, &$template){
 };
 
 $F_password_reset = function ($params, &$data, &$template){
-  if (!empty($_POST['action']) and $_POST['action'] == 'cancel'){
+  if (!empty($_POST[ACTION]) and $_POST[ACTION] == 'cancel'){
     $_SESSION = ['message'=>'Password recovery was canceled.'];
     header("Location: /panel");
     die();
@@ -244,7 +246,7 @@ $F_password_reset = function ($params, &$data, &$template){
       $secret = trim($_POST['secret']);
       $ok = $db->use_secret($alleged, $secret);
       if ($ok){
-        $_SESSION['action'] = 'password_change';
+        $_SESSION[ACTION] = 'password_change';
         $_SESSION['uname'] = $alleged;
         $_SESSION['message'] = 'Secret key successfully verified';
         header("Location: /register");

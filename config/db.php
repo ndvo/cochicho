@@ -20,7 +20,7 @@ class Conn{
 	}
 
   private function connect($reload = False){
-    if ($this->pdo == null or $reload == True){
+    if ($this->pdo == null || $reload){
       try{
         $database_path = 'sqlite:'.self::$dbpath;
         $this->pdo = new \PDO($database_path);
@@ -34,12 +34,13 @@ class Conn{
 
   public function install(){
     rename(self::$dbpath, self::$dbpath.".bkp");
-    $this->connect($reload=True);
+		// Force reloading the database
+    $this->connect(True);
     $query = file_get_contents('db/install.sql');
     $affected = $this->pdo->exec($query);
     if ($affected === false){
-      $err = $this->pdo->errorInfo();
-      return $err;
+			// return error
+      return  $this->pdo->errorInfo();
     }
   }
 

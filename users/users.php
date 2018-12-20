@@ -31,8 +31,8 @@ class User{
   public function __construct($id = false, $name = false){
     $this->err = [];
     $this->db = D::get();
-    if (empty($id) and empty($name)){
-      $logged_in = $this->am_i_in();
+    if (empty($id) && empty($name)){
+      $this->am_i_in();
     }else{
       if (!empty($id)){
         $this->load_by_id($id);
@@ -43,40 +43,40 @@ class User{
   }
 
   public function register(){
-    $err = [];
+    $errors = [];
     if (!empty($_POST)){
       $uname = trim($_POST['username']);
       if ( !self::is_valid_name($uname) ){
-        $err[] = 'The username chosen is invalid.';
+        $errors[] = 'The username chosen is invalid.';
       } 
       if (empty($this->generate_pwd())){
-        $err[] = 'Please, provide the 3 passwords';
+        $errors[] = 'Please, provide the 3 passwords';
       }
       if (!$this->password_requirements($this->generate_pwd())){
-        $err[] = 'Please, provide a stronger password';
+        $errors[] = 'Please, provide a stronger password';
       }
       global $db;
       $exists = $db->mail_by_name($uname);
       if (!empty($exists)){
-        $err[]='Sorry. This username was already taken';
+        $errors[]='Sorry. This username was already taken';
       }
       $this->mail = $_POST['mail'];
       $umailconfirm = $_POST['mail2'];
       $pwd = password_hash($this->generate_pwd(), PASSWORD_DEFAULT);
       if ($this->mail != $umailconfirm){
-        $err[] = 'Please, be sure to input the same address in both email and confirm email fields.';
+        $errors[] = 'Please, be sure to input the same address in both email and confirm email fields.';
       }
       if (!filter_var($this->mail, FILTER_VALIDATE_EMAIL)){
-        $err[] = 'There is something wrong with the provided email.';
+        $errors[] = 'There is something wrong with the provided email.';
       }
       $exists = $db->name_by_mail($this->mail);
       if (!empty($exists)){
-        $err[] = "Sorry, we couldn't create the account. Please, use a different email address";
+        $errors[] = "Sorry, we couldn't create the account. Please, use a different email address";
       }
       if (empty($_POST['terms'])){
-        $err[] = 'The use of this service is conditioned to the acceptance of the Terms of Use.';
+        $errors[] = 'The use of this service is conditioned to the acceptance of the Terms of Use.';
       }
-      if (empty($err)){
+      if (empty($errors)){
         $this->name = $uname;
         $this->create_secret($this->generate_pwd());
         $this->iv = random_bytes(16);
@@ -89,7 +89,7 @@ class User{
         }
       }
     }
-    $this->err = $err;
+    $this->err = $errors;
     return False;
   }
 
